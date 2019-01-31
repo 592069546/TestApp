@@ -1,18 +1,21 @@
 package com.example.administrator.recycler
 
-import android.content.Intent
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.support.v4.content.ContextCompat
 import android.support.v7.widget.LinearLayoutManager
 import android.view.View
-import io.flutter.facade.Flutter
 import kotlinx.android.synthetic.main.activity_main.*
 import java.util.*
 
+import com.example.administrator.recycler.Adapter.PersonAdapter
+import com.example.administrator.recycler.data.Person
+
+import io.flutter.facade.Flutter
+
 class MainActivity : AppCompatActivity() , View.OnClickListener{
     var mdata = ArrayList<Person>(5)
-    val adapter by lazy { Adapter(this@MainActivity,mdata) }
+    val adapter by lazy { PersonAdapter(this@MainActivity,mdata) }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)

@@ -1,4 +1,4 @@
-package com.example.administrator.recycler
+package com.example.administrator.recycler.Adapter
 
 import android.content.Context
 import android.support.v7.widget.RecyclerView
@@ -8,7 +8,11 @@ import android.view.ViewGroup
 import android.widget.*
 import java.util.*
 
-class Adapter(val context: Context, val mData: ArrayList<Person>): RecyclerView.Adapter<Adapter.Holder>(){
+import com.example.administrator.recycler.R
+import com.example.administrator.recycler.data.Person
+
+
+class PersonAdapter(val context: Context, val mData: ArrayList<Person>): RecyclerView.Adapter<PersonAdapter.Holder>(){
     val mLayoutInflater = LayoutInflater.from(context)
 
     fun addItem(){
