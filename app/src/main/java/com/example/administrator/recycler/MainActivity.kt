@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.support.v4.content.ContextCompat
 import android.support.v7.widget.LinearLayoutManager
 import android.view.View
+import io.flutter.facade.Flutter
 import kotlinx.android.synthetic.main.activity_main.*
 import java.util.*
 
@@ -23,21 +24,28 @@ class MainActivity : AppCompatActivity() , View.OnClickListener{
         add.setOnClickListener(this)
         add.setTextColor(ContextCompat.getColor(this,R.color.colorAccent))
         del.setOnClickListener(this)
+        flutter_activity.setOnClickListener(this)
     }
 
     override fun onClick(view: View){
         when(view.id){
             R.id.add -> addItem()
             R.id.del -> delItem()
+            R.id.flutter_activity -> toFlutter()
         }
     }
 
-    fun addItem(){
+    private fun addItem(){
         adapter.addItem()
     }
 
-    fun delItem(){
+    private fun delItem(){
         adapter.delItem()
+    }
+
+    private fun toFlutter(){
+        val flutterView =  Flutter.createView(this, lifecycle, "/")
+        setContentView(flutterView)
     }
 
     fun initData(){
