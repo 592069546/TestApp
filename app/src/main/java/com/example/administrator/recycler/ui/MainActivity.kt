@@ -1,5 +1,6 @@
-package com.example.administrator.recycler
+package com.example.administrator.recycler.ui
 
+import android.content.Intent
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.support.v4.content.ContextCompat
@@ -9,23 +10,23 @@ import kotlinx.android.synthetic.main.activity_main.*
 import java.util.*
 
 import com.example.administrator.recycler.Adapter.PersonAdapter
+import com.example.administrator.recycler.R
 import com.example.administrator.recycler.data.Person
 
-import io.flutter.facade.Flutter
-
 class MainActivity : AppCompatActivity() , View.OnClickListener{
-    var mdata = ArrayList<Person>(5)
+    var mdata = ArrayList<Person>()
     val adapter by lazy { PersonAdapter(this@MainActivity,mdata) }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        initData()
-        sortData()
+        mdata = Person.initData()
+        Person.sortData(mdata)
         recycler.adapter = adapter
         adapter.notifyDataSetChanged()
         recycler.layoutManager = LinearLayoutManager(this)
         add.setOnClickListener(this)
         add.setTextColor(ContextCompat.getColor(this,R.color.colorAccent))
+        add.visibility = View.INVISIBLE
         del.setOnClickListener(this)
         flutter_activity.setOnClickListener(this)
     }
@@ -44,33 +45,11 @@ class MainActivity : AppCompatActivity() , View.OnClickListener{
 
     private fun delItem(){
         adapter.delItem()
+        add.visibility = View.VISIBLE
     }
 
     private fun toFlutter(){
-        val flutterView =  Flutter.createView(this, lifecycle, "/")
-        setContentView(flutterView)
+        startActivity(Intent(this, FlutterActivity::class.java))
     }
 
-    fun initData(){
-        mdata.add(Person("sss",Random().nextInt(30),Random().nextInt(2)))
-        mdata.add(Person("aaa",Random().nextInt(30),Random().nextInt(2)))
-        mdata.add(Person("ddd",Random().nextInt(30),Random().nextInt(2)))
-        mdata.add(Person("www",Random().nextInt(30),Random().nextInt(2)))
-        mdata.add(Person("qqq",Random().nextInt(30),Random().nextInt(2)))
-        mdata.add(Person("dsa",Random().nextInt(30),Random().nextInt(2)))
-        mdata.add(Person("asd",Random().nextInt(30),Random().nextInt(2)))
-        mdata.add(Person("sad",Random().nextInt(30),Random().nextInt(2)))
-        mdata.add(Person("das",Random().nextInt(30),Random().nextInt(2)))
-        mdata.add(Person("sda",Random().nextInt(30),Random().nextInt(2)))
-    }
-
-    fun sortData(){
-        var j = 0
-        for(i in 0 until mdata.size ){
-            if(mdata[i].type == 1){
-                mdata.add(j,mdata.removeAt(i))
-                j++
-            }
-        }
-    }
 }
