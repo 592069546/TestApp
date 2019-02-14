@@ -20,6 +20,7 @@
         </activity>
 
         <activity android:name=".ui.FlutterActivity"/>
+        <activity android:name=".ui.PersonActivity"/>
     </application>
 
 </manifest>

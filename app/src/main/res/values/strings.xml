@@ -2,4 +2,6 @@
     <string name="app_name">Recycler</string>
     <string name="add">添加</string>
     <string name="del">删除</string>
+    <string name="person">person</string>
+    <string name="flutter">flutter</string>
 </resources>

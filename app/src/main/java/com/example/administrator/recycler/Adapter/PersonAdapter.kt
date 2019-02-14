@@ -15,19 +15,6 @@ import com.example.administrator.recycler.data.Person
 class PersonAdapter(val context: Context, val mData: ArrayList<Person>): RecyclerView.Adapter<PersonAdapter.Holder>(){
     val mLayoutInflater = LayoutInflater.from(context)
 
-    fun addItem(){
-        mData.add(Person(Random().nextInt(200).toString(), Random().nextInt(30), Random().nextInt(2)))
-        notifyItemInserted(mData.size)
-    }
-
-    fun delItem(){
-        if(mData.size != 0){
-            val position = Random().nextInt(mData.size)
-            mData.removeAt(position)
-            notifyItemRemoved(position)
-        }
-    }
-
     override fun getItemCount() = mData.size
 
     override fun onBindViewHolder(p0: Holder, p1: Int) {
@@ -54,12 +41,23 @@ class PersonAdapter(val context: Context, val mData: ArrayList<Person>): Recycle
         }
     }
 
+    fun addItem(){
+        mData.add(Person(Random().nextInt(200).toString(), Random().nextInt(30), Random().nextInt(2)))
+        notifyItemInserted(mData.size)
+    }
 
+    fun delItem(){
+        if(mData.size != 0){
+            val position = Random().nextInt(mData.size)
+            mData.removeAt(position)
+            notifyItemRemoved(position)
+        }
+    }
 
     class Holder(val view: View): RecyclerView.ViewHolder(view){
         var name = view.findViewById<TextView>(R.id.item_name)
         var age = view.findViewById<TextView>(R.id.item_age)
         var type = view.findViewById<TextView>(R.id.item_type)
-        var layout = view.findViewById<LinearLayout>(R.id.linear)
+        var layout = view.findViewById<LinearLayout>(R.id.item_linear)
     }
 }
