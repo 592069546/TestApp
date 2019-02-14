@@ -33,7 +33,10 @@ class Person(val name: String ?= null,val age: Int ?= null,val type: Int ?= null
                 j++
             }
         }*/
-        mdata.sortBy { it.type != 1} //为真排在最后
+        //降序排序
+        //mdata.sortBy { it.type != 1}
+        //根据多个条件来排序，可用sortWith,根据compareBy条件顺序排序
+        mdata.sortWith(compareBy({it.type != 1} , {it.age}))
         return mdata
     }
 
