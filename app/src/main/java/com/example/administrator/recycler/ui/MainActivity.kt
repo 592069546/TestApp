@@ -16,11 +16,15 @@ import com.example.administrator.recycler.data.Person
 class MainActivity : AppCompatActivity() , View.OnClickListener{
     var mdata = ArrayList<Person>()
     val adapter by lazy { PersonAdapter(this@MainActivity,mdata) }
+    val person = Person()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        mdata = Person.initData()
-        Person.sortData(mdata)
+
+        mdata = person.initData(10)
+        person.sortData(mdata)
+
         recycler.adapter = adapter
         adapter.notifyDataSetChanged()
         recycler.layoutManager = LinearLayoutManager(this)
