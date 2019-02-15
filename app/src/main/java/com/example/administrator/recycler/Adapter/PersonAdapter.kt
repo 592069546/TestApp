@@ -28,7 +28,7 @@ class PersonAdapter(val context: Context, val mData: ArrayList<Person>): Recycle
 
     override fun onCreateViewHolder(p0: ViewGroup, p1: Int) = Holder(mLayoutInflater.inflate(R.layout.item_view, p0, false))
 
-    private fun change(holder: Holder){
+    private fun change(holder: Holder){   //动态添加按钮
         val button = Button(this.context)
         button.text = "点一下"
         val lp = LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,LinearLayout.LayoutParams.WRAP_CONTENT)

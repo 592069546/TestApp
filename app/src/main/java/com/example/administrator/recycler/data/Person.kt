@@ -3,7 +3,7 @@ package com.example.administrator.recycler.data
 import java.util.*
 import kotlin.collections.ArrayList
 
-class Person(val name: String ?= null,val age: Int ?= null,val type: Int ?= null){
+class Person(val name: String ?= null,val age: Int ?= null,val type: Int ?= null){  //希望有两种构造方式
 
     fun initData(num: Int): ArrayList<Person>{
         val mdata = ArrayList<Person>(num)

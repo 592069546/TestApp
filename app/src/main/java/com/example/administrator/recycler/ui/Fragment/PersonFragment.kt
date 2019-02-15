@@ -1,36 +1,35 @@
-package com.example.administrator.recycler.ui
+package com.example.administrator.recycler.ui.Fragment
 
-import android.content.Intent
 import android.os.Bundle
 import android.support.v4.content.ContextCompat
-import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
 import android.view.View
-
 import java.util.ArrayList
 
 import com.example.administrator.recycler.Adapter.PersonAdapter
 import com.example.administrator.recycler.R
 import com.example.administrator.recycler.data.Person
-import kotlinx.android.synthetic.main.activity_person.*
+import kotlinx.android.synthetic.main.fragment_person.*
 
-class PersonActivity: AppCompatActivity(), View.OnClickListener{
+class PersonFragment: LazyFragment(), View.OnClickListener{
     var mdata = ArrayList<Person>()
-    val adapter by lazy { PersonAdapter(this@PersonActivity,mdata) }
+    val adapter by lazy { PersonAdapter(context!!,mdata) }
     val person = Person()
+
+    override val layoutId = R.layout.fragment_person
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_person)
-
         mdata = person.initData(10)
         person.sortData(mdata)
+    }
 
+    override fun initView(view: View, savedInstanceState: Bundle?) {
         recycler.adapter = adapter
         adapter.notifyDataSetChanged()
-        recycler.layoutManager = LinearLayoutManager(this)
+        recycler.layoutManager = LinearLayoutManager(context!!)
         add.setOnClickListener(this)
-        add.setTextColor(ContextCompat.getColor(this, R.color.colorAccent))
+        add.setTextColor(ContextCompat.getColor(context!!, R.color.colorAccent))
         add.visibility = View.INVISIBLE
         del.setOnClickListener(this)
     }
@@ -51,7 +50,7 @@ class PersonActivity: AppCompatActivity(), View.OnClickListener{
         add.visibility = View.VISIBLE
     }
 
-    private fun toFlutter(){
-        startActivity(Intent(this, FlutterActivity::class.java))
-    }
+    override fun onInvisible() {}
+
+    override fun onVisible() {}
 }
