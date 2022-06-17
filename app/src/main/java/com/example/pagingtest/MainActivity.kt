@@ -9,7 +9,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.pagingtest.room.AppDatabase
-import com.example.pagingtest.room.User
 import com.example.pagingtest.service.DBService
 import com.example.pagingtest.ui.RoomAdapter
 
@@ -32,7 +31,8 @@ class MainActivity : AppCompatActivity() {
         rv_db.adapter = roomAdapter
 
         tv_insert.setOnClickListener {
-            mainViewModel.insertUser(User.newUser())
+//            startService(Intent(this, DBService::class.java))
+            mainViewModel.onPost()
         }
 
         startService(Intent(this, DBService::class.java))
@@ -45,9 +45,22 @@ class MainActivity : AppCompatActivity() {
 
     private fun initObserver() {
         mainViewModel.allUsers.observe(this) {
+            Log.d(TAG, "all ****** ${it.size}")
             it.let {
                 roomAdapter.submitList(it)
             }
+        }
+
+        mainViewModel.singleHalfUsers.observe(this) {
+            Log.d(TAG, "single half ****** " + it.size)
+        }
+
+        mainViewModel.twiceHalfUsers.observe(this) {
+            Log.d(TAG, "twice half ****** ${it.size}")
+        }
+
+        mainViewModel.combineUsers.observe(this) {
+            Log.d(TAG, "user ****** ${it.size}")
         }
     }
 
