@@ -4,6 +4,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import com.example.pagingtest.R
 import com.example.pagingtest.room.User
@@ -34,5 +35,12 @@ class RoomAdapter : RecyclerView.Adapter<RoomAdapter.RoomViewHolder>() {
     class RoomViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val tv_id: TextView by lazy { view.findViewById(R.id.tv_id) }
         val tv_name: TextView by lazy { view.findViewById(R.id.tv_name) }
+        val tv_left_menu: TextView by lazy { view.findViewById(R.id.tv_left_menu) }
+
+        init {
+            tv_left_menu.setOnClickListener {
+                Toast.makeText(it.context, "点击左边", Toast.LENGTH_SHORT).show()
+            }
+        }
     }
 }
