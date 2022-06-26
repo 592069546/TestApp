@@ -6,11 +6,14 @@ import android.util.Log
 import android.widget.TextView
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.pagingtest.room.AppDatabase
 import com.example.pagingtest.service.DBService
+import com.example.pagingtest.ui.ItemTouchHelperCallback
 import com.example.pagingtest.ui.RoomAdapter
+import com.example.pagingtest.view.ItemExpandAnimator
 
 class MainActivity : AppCompatActivity() {
     private val mainViewModel: MainViewModel by viewModels {
@@ -30,9 +33,16 @@ class MainActivity : AppCompatActivity() {
         rv_db.layoutManager = LinearLayoutManager(this)
         rv_db.adapter = roomAdapter
 
+//        ItemSwipeTouchHelper(ItemTouchHelperCallback(), rv_db)
+
+        val itemTouchHelper = ItemTouchHelper(ItemTouchHelperCallback())
+        itemTouchHelper.attachToRecyclerView(rv_db)
+
+        rv_db.itemAnimator = ItemExpandAnimator(this)
+
         tv_insert.setOnClickListener {
-//            startService(Intent(this, DBService::class.java))
-            mainViewModel.onPost()
+            startService(Intent(this, DBService::class.java))
+//            mainViewModel.onPost()
         }
 
         startService(Intent(this, DBService::class.java))

@@ -7,8 +7,6 @@ import android.view.*
 import androidx.core.view.GravityCompat
 import androidx.core.view.ViewCompat
 import androidx.customview.widget.ViewDragHelper
-import com.example.pagingtest.R
-import java.lang.reflect.Constructor
 import kotlin.math.abs
 
 class SwipeLayout @JvmOverloads constructor(
@@ -16,11 +14,13 @@ class SwipeLayout @JvmOverloads constructor(
 ) : ViewGroup(context, attrs, defStyleAttr) {
 
     companion object {
-        private const val PREVIEW_NONE = 0
-        private const val PREVIEW_LEFT = 1
-        private const val PREVIEW_RIGHT = 2
-        private const val PREVIEW_START = 3
-        private const val PREVIEW_END = 4
+        private val TAG = SwipeLayout::class.java.simpleName
+
+//        private const val PREVIEW_NONE = 0
+//        private const val PREVIEW_LEFT = 1
+//        private const val PREVIEW_RIGHT = 2
+//        private const val PREVIEW_START = 3
+//        private const val PREVIEW_END = 4
 
         private const val FLAG_IS_OPENED = 0x1
         private const val FLAG_IS_OPENING = 0x2
@@ -37,14 +37,14 @@ class SwipeLayout @JvmOverloads constructor(
         const val STATE_DRAGGING = ViewDragHelper.STATE_DRAGGING
         const val STATE_SETTLING = ViewDragHelper.STATE_SETTLING
 
-        private val designerConstructors =
-            ThreadLocal<MutableMap<String, Constructor<Designer>>>()
+//        private val designerConstructors =
+//            ThreadLocal<MutableMap<String, Constructor<Designer>>>()
     }
 
     private val matchParentChildren = ArrayList<View>(1)
 
-    private var preview = PREVIEW_NONE
-    var autoClose = false
+//    private var preview = PREVIEW_NONE
+//    var autoClose = false
 
     private val touchSlop = ViewConfiguration.get(context).scaledTouchSlop
     private val velocity = ViewConfiguration.get(context).scaledMinimumFlingVelocity
@@ -74,102 +74,106 @@ class SwipeLayout @JvmOverloads constructor(
      * set the value to zero.
      */
     var swipeFlags = LEFT or RIGHT
-        set(value) {
-            val direction = getAbsoluteDirection(value)
-            if ((direction and (LEFT or RIGHT)) == 0) {
-                closeActiveMenu()
-            } else if ((direction and LEFT) == 0) {
-                closeRightMenu()
-            } else if ((direction and RIGHT) == 0) {
-                closeLeftMenu()
-            }
-            field = value
-        }
+//        set(value) {
+//            val direction = getAbsoluteDirection(value)
+//            if ((direction and (LEFT or RIGHT)) == 0) {
+//                closeActiveMenu()
+//            } else if ((direction and LEFT) == 0) {
+//                closeRightMenu()
+//            } else if ((direction and RIGHT) == 0) {
+//                closeLeftMenu()
+//            }
+//            field = value
+//        }
 
     init {
-        var designer: Designer? = null
-        if (attrs != null) {
-            val a = context.obtainStyledAttributes(attrs, R.styleable.SwipeLayout)
-            preview = a.getInt(R.styleable.SwipeLayout_preview, preview)
-            autoClose = a.getBoolean(R.styleable.SwipeLayout_autoClose, autoClose)
-            designer =
-                Designer.parseDesigner(context, a.getString(R.styleable.SwipeLayout_designer))
-            a.recycle()
-        }
-        this.designer = designer ?: ClassicDesigner()
+//        var designer: Designer? = null
+//        if (attrs != null) {
+//            val a = context.obtainStyledAttributes(attrs, R.styleable.SwipeLayout)
+//            preview = a.getInt(R.styleable.SwipeLayout_preview, preview)
+//            autoClose = a.getBoolean(R.styleable.SwipeLayout_autoClose, autoClose)
+//            designer =
+//                Designer.parseDesigner(context, a.getString(R.styleable.SwipeLayout_designer))
+//            a.recycle()
+//        }
+//        this.designer = designer ?: ClassicDesigner()
+        this.designer = ClassicDesigner()
     }
 
+    /**
+     * @see SwipeMenuRecyclerView#dispatchTouchEvent()
+     * */
     fun closeMenu(animate: Boolean = true) {
         closeActiveMenu(animate)
     }
 
-    fun closeLeftMenu(animate: Boolean = true) {
-        val activeMenu = activeMenu ?: return
-        if (activeMenu == leftMenu) {
-            closeActiveMenu(animate)
-        }
-    }
-
-    fun closeRightMenu(animate: Boolean = true) {
-        val activeMenu = activeMenu ?: return
-        if (activeMenu == rightMenu) {
-            closeActiveMenu(animate)
-        }
-    }
-
-    fun closeStartMenu(animate: Boolean = true) {
-        if (isLayoutRTL()) closeRightMenu(animate) else closeLeftMenu(animate)
-    }
-
-    fun closeEndMenu(animate: Boolean = true) {
-        if (isLayoutRTL()) closeLeftMenu(animate) else closeRightMenu(animate)
-    }
-
-    fun isLeftMenuOpened(): Boolean {
-        val activeMenu = activeMenu ?: return false
-        return activeMenu == leftMenu && openState and FLAG_IS_OPENED == FLAG_IS_OPENED
-    }
-
-    fun isRightMenuOpened(): Boolean {
-        val activeMenu = activeMenu ?: return false
-        return activeMenu == rightMenu && openState and FLAG_IS_OPENED == FLAG_IS_OPENED
-    }
-
-    fun isStartMenuOpened(): Boolean {
-        return if (isLayoutRTL()) isRightMenuOpened() else isLeftMenuOpened()
-    }
-
-    fun isEndMenuOpened(): Boolean {
-        return if (isLayoutRTL()) isLeftMenuOpened() else isRightMenuOpened()
-    }
-
-    fun openLeftMenu(animate: Boolean = true) {
-        autoClosePending = false
-        activeMenu = leftMenu
-        openActiveMenu(animate)
-    }
-
-    fun openRightMenu(animate: Boolean = true) {
-        autoClosePending = false
-        activeMenu = rightMenu
-        openActiveMenu(animate)
-    }
-
-    fun openStartMenu(animate: Boolean = true) {
-        if (isLayoutRTL()) openRightMenu(animate) else openLeftMenu(animate)
-    }
-
-    fun openEndMenu(animate: Boolean = true) {
-        if (isLayoutRTL()) openLeftMenu(animate) else openRightMenu(animate)
-    }
-
-    fun addListener(listener: Listener) {
-        listeners.add(listener)
-    }
-
-    fun removeListener(listener: Listener) {
-        listeners.remove(listener)
-    }
+//    fun closeLeftMenu(animate: Boolean = true) {
+//        val activeMenu = activeMenu ?: return
+//        if (activeMenu == leftMenu) {
+//            closeActiveMenu(animate)
+//        }
+//    }
+//
+//    fun closeRightMenu(animate: Boolean = true) {
+//        val activeMenu = activeMenu ?: return
+//        if (activeMenu == rightMenu) {
+//            closeActiveMenu(animate)
+//        }
+//    }
+//
+//    fun closeStartMenu(animate: Boolean = true) {
+//        if (isLayoutRTL()) closeRightMenu(animate) else closeLeftMenu(animate)
+//    }
+//
+//    fun closeEndMenu(animate: Boolean = true) {
+//        if (isLayoutRTL()) closeLeftMenu(animate) else closeRightMenu(animate)
+//    }
+//
+//    fun isLeftMenuOpened(): Boolean {
+//        val activeMenu = activeMenu ?: return false
+//        return activeMenu == leftMenu && openState and FLAG_IS_OPENED == FLAG_IS_OPENED
+//    }
+//
+//    fun isRightMenuOpened(): Boolean {
+//        val activeMenu = activeMenu ?: return false
+//        return activeMenu == rightMenu && openState and FLAG_IS_OPENED == FLAG_IS_OPENED
+//    }
+//
+//    fun isStartMenuOpened(): Boolean {
+//        return if (isLayoutRTL()) isRightMenuOpened() else isLeftMenuOpened()
+//    }
+//
+//    fun isEndMenuOpened(): Boolean {
+//        return if (isLayoutRTL()) isLeftMenuOpened() else isRightMenuOpened()
+//    }
+//
+//    fun openLeftMenu(animate: Boolean = true) {
+//        autoClosePending = false
+//        activeMenu = leftMenu
+//        openActiveMenu(animate)
+//    }
+//
+//    fun openRightMenu(animate: Boolean = true) {
+//        autoClosePending = false
+//        activeMenu = rightMenu
+//        openActiveMenu(animate)
+//    }
+//
+//    fun openStartMenu(animate: Boolean = true) {
+//        if (isLayoutRTL()) openRightMenu(animate) else openLeftMenu(animate)
+//    }
+//
+//    fun openEndMenu(animate: Boolean = true) {
+//        if (isLayoutRTL()) openLeftMenu(animate) else openRightMenu(animate)
+//    }
+//
+//    fun addListener(listener: Listener) {
+//        listeners.add(listener)
+//    }
+//
+//    fun removeListener(listener: Listener) {
+//        listeners.remove(listener)
+//    }
 
     private fun closeActiveMenu(animate: Boolean = true) {
         if (activeMenu == null) {
@@ -298,7 +302,7 @@ class SwipeLayout @JvmOverloads constructor(
             MotionEvent.ACTION_DOWN -> {
                 downX = ev.x.toInt()
                 downY = ev.y.toInt()
-                if (autoClose || isTouchContent(downX, downY)) {
+                if (/*autoClose ||*/ isTouchContent(downX, downY)) {
                     autoClosePending = true
                 }
             }
@@ -355,6 +359,63 @@ class SwipeLayout @JvmOverloads constructor(
     override fun onInterceptTouchEvent(ev: MotionEvent): Boolean {
         processTouchEvent(ev)
         return isDragging
+    }
+
+    //TODO 优化padding
+    //TODO detech处理
+    fun updateOffset(dX: Float) {
+        val contentView = contentView ?: return
+        val left = contentView.left
+        if (left == 0) {
+            activeMenu = if (dX > 0) {
+                leftMenu
+            } else if (dX < 0)
+                rightMenu
+            else {
+                scrollOffsetX(0)
+                null
+            }
+        }
+        val activeMenu = activeMenu ?: return
+        val dx =
+            if (activeMenu == leftMenu) {
+                dX.coerceIn(paddingLeft.toFloat(), (activeMenu.width + paddingLeft).toFloat())
+            } else {
+                dX.coerceIn((paddingLeft - activeMenu.width).toFloat(), paddingLeft.toFloat())
+            }
+
+        scrollOffsetX(dx.toInt())
+    }
+
+    /**
+     * @param dx > 0 左滑 < 0 右滑
+     * */
+    private fun scrollOffsetX(dx: Int) {
+        val activeMenu = activeMenu ?: return
+        scrollTo(-dx, 0)
+        val offset: Float
+        if (activeMenu == leftMenu) {
+            offset = dx / activeMenu.width.toFloat()
+            designer.onLayout(
+                activeMenu,
+                -dx,
+                paddingTop,
+                left,
+                bottom - paddingBottom
+            )
+        } else {
+            offset = -dx / activeMenu.width.toFloat()
+            designer.onLayout(
+                activeMenu,
+                right,
+                paddingTop,
+                right - dx,
+                bottom - paddingBottom
+            )
+        }
+        if (onScreen != offset) {
+            dispatchOnSwipe(activeMenu, offset)
+        }
     }
 
     private fun setContentViewOffset() {
@@ -561,9 +622,9 @@ class SwipeLayout @JvmOverloads constructor(
     }
 
     override fun onLayout(changed: Boolean, left: Int, top: Int, right: Int, bottom: Int) {
-        if (isInEditMode) {
-            openPreview()
-        }
+//        if (isInEditMode) {
+//            openPreview()
+//        }
         val parentLeft = paddingLeft
         val parentRight = right - left - paddingRight
         val parentTop = paddingTop
@@ -615,16 +676,16 @@ class SwipeLayout @JvmOverloads constructor(
         }
     }
 
-    private fun openPreview() {
-        activeMenu = when (preview) {
-            PREVIEW_LEFT -> leftMenu
-            PREVIEW_RIGHT -> rightMenu
-            PREVIEW_START -> if (isLayoutRTL()) rightMenu else leftMenu
-            PREVIEW_END -> if (isLayoutRTL()) leftMenu else rightMenu
-            else -> null
-        }
-        openActiveMenu(false)
-    }
+//    private fun openPreview() {
+//        activeMenu = when (preview) {
+//            PREVIEW_LEFT -> leftMenu
+//            PREVIEW_RIGHT -> rightMenu
+//            PREVIEW_START -> if (isLayoutRTL()) rightMenu else leftMenu
+//            PREVIEW_END -> if (isLayoutRTL()) leftMenu else rightMenu
+//            else -> null
+//        }
+//        openActiveMenu(false)
+//    }
 
     private fun isLayoutRTL(): Boolean {
         return ViewCompat.getLayoutDirection(this) == ViewCompat.LAYOUT_DIRECTION_RTL
@@ -709,34 +770,34 @@ class SwipeLayout @JvmOverloads constructor(
 
         fun onLayout(menuView: View, left: Int, top: Int, right: Int, bottom: Int)
 
-        companion object {
-            fun parseDesigner(context: Context, name: String?): Designer? {
-                if (name.isNullOrEmpty()) return null
-
-                val fullName =
-                    if (name.startsWith(".")) context.packageName + name else name
-
-                try {
-                    var constructors = designerConstructors.get()
-                    if (constructors == null) {
-                        constructors = mutableMapOf()
-                    }
-                    var c = constructors[fullName]
-                    if (c == null) {
-                        @Suppress("UNCHECKED_CAST")
-                        val clazz = Class.forName(fullName, false, context.classLoader)
-                                as Class<Designer>
-                        c = clazz.getConstructor()
-                        c.isAccessible = true
-                        constructors[fullName] = c
-                        return c.newInstance()
-                    }
-                    return null
-                } catch (e: Exception) {
-                    throw RuntimeException("Could not inflate Designer subclass $fullName", e)
-                }
-            }
-        }
+//        companion object {
+//            fun parseDesigner(context: Context, name: String?): Designer? {
+//                if (name.isNullOrEmpty()) return null
+//
+//                val fullName =
+//                    if (name.startsWith(".")) context.packageName + name else name
+//
+//                try {
+//                    var constructors = designerConstructors.get()
+//                    if (constructors == null) {
+//                        constructors = mutableMapOf()
+//                    }
+//                    var c = constructors[fullName]
+//                    if (c == null) {
+//                        @Suppress("UNCHECKED_CAST")
+//                        val clazz = Class.forName(fullName, false, context.classLoader)
+//                                as Class<Designer>
+//                        c = clazz.getConstructor()
+//                        c.isAccessible = true
+//                        constructors[fullName] = c
+//                        return c.newInstance()
+//                    }
+//                    return null
+//                } catch (e: Exception) {
+//                    throw RuntimeException("Could not inflate Designer subclass $fullName", e)
+//                }
+//            }
+//        }
     }
 
     class ClassicDesigner : Designer {
@@ -759,109 +820,109 @@ class SwipeLayout @JvmOverloads constructor(
         }
     }
 
-    class OverlayDesigner : Designer {
-
-        private var leftMenu: View? = null
-
-        override fun onInit(parent: SwipeLayout, leftMenu: View?, rightMenu: View?) {
-            this.leftMenu = leftMenu
-            leftMenu?.visibility = View.INVISIBLE
-            rightMenu?.visibility = View.INVISIBLE
-        }
-
-        override fun onLayout(menuView: View, left: Int, top: Int, right: Int, bottom: Int) {
-            val width = right - left
-            menuView.visibility = if (width > 0) VISIBLE else INVISIBLE
-            if (menuView == leftMenu) {
-                if (width == 0) {
-                    // If menu is INVISIBLE, move it to outside. See isTouchMenu.
-                    menuView.layout(left - menuView.width, menuView.top, left, menuView.bottom)
-                } else {
-                    menuView.layout(left, menuView.top, left + menuView.width, menuView.bottom)
-                }
-            } else {
-                if (width == 0) {
-                    // If menu is INVISIBLE, move it to outside. See isTouchMenu.
-                    menuView.layout(right, menuView.top, right + menuView.width, menuView.bottom)
-                } else {
-                    menuView.layout(right - menuView.width, menuView.top, right, menuView.bottom)
-                }
-            }
-        }
-    }
-
-    class ParallaxDesigner : Designer {
-
-        private var leftMenu: View? = null
-
-        override fun onInit(parent: SwipeLayout, leftMenu: View?, rightMenu: View?) {
-            this.leftMenu = leftMenu
-            leftMenu?.visibility = View.INVISIBLE
-            rightMenu?.visibility = View.INVISIBLE
-        }
-
-        override fun onLayout(menuView: View, left: Int, top: Int, right: Int, bottom: Int) {
-            val width = right - left
-            menuView.visibility = if (width > 0) VISIBLE else INVISIBLE
-            if (menuView == leftMenu) {
-                if (width == 0) {
-                    // If menu is INVISIBLE, move it to outside. See isTouchMenu.
-                    menuView.layout(left - menuView.width, menuView.top, left, menuView.bottom)
-                } else {
-                    menuView.layout(right - menuView.width, menuView.top, right, menuView.bottom)
-                    if (menuView is ViewGroup && menuView.childCount > 1) {
-                        layoutLeftMenu(menuView, left, right)
-                    }
-                }
-            } else {
-                if (width == 0) {
-                    // If menu is INVISIBLE, move it to outside. See isTouchMenu.
-                    menuView.layout(right, menuView.top, right + menuView.width, menuView.bottom)
-                } else {
-                    menuView.layout(right - menuView.width, menuView.top, right, menuView.bottom)
-                    if (menuView is ViewGroup && menuView.childCount > 0) {
-                        layoutRightMenu(menuView, left, right)
-                    }
-                }
-            }
-        }
-
-        private fun layoutLeftMenu(menuView: ViewGroup, left: Int, right: Int) {
-            val onScreen = (right - left).toFloat() / menuView.width
-            var child = menuView.getChildAt(0)
-            var childRight = menuView.width
-            child.layout(childRight - child.width, child.top, childRight, child.bottom)
-            var prevChild = child
-            for (i in 1 until menuView.childCount) {
-                child = menuView.getChildAt(i)
-                childRight = (prevChild.right - prevChild.width * onScreen).toInt()
-                child.layout(
-                    childRight - child.width,
-                    child.top,
-                    childRight,
-                    child.bottom
-                )
-                prevChild = child
-            }
-        }
-
-        private fun layoutRightMenu(menuView: ViewGroup, left: Int, right: Int) {
-            val onScreen = (right - left).toFloat() / menuView.width
-            var child = menuView.getChildAt(menuView.childCount - 1)
-            var childLeft = menuView.width - (child.width * onScreen).toInt()
-            child.layout(childLeft, child.top, childLeft + child.width, child.bottom)
-            var prevChild = child
-            for (i in menuView.childCount - 2 downTo 0) {
-                child = menuView.getChildAt(i)
-                childLeft = (prevChild.left - child.width * onScreen).toInt()
-                child.layout(
-                    childLeft,
-                    child.top,
-                    childLeft + child.width,
-                    child.bottom
-                )
-                prevChild = child
-            }
-        }
-    }
+//    class OverlayDesigner : Designer {
+//
+//        private var leftMenu: View? = null
+//
+//        override fun onInit(parent: SwipeLayout, leftMenu: View?, rightMenu: View?) {
+//            this.leftMenu = leftMenu
+//            leftMenu?.visibility = View.INVISIBLE
+//            rightMenu?.visibility = View.INVISIBLE
+//        }
+//
+//        override fun onLayout(menuView: View, left: Int, top: Int, right: Int, bottom: Int) {
+//            val width = right - left
+//            menuView.visibility = if (width > 0) VISIBLE else INVISIBLE
+//            if (menuView == leftMenu) {
+//                if (width == 0) {
+//                    // If menu is INVISIBLE, move it to outside. See isTouchMenu.
+//                    menuView.layout(left - menuView.width, menuView.top, left, menuView.bottom)
+//                } else {
+//                    menuView.layout(left, menuView.top, left + menuView.width, menuView.bottom)
+//                }
+//            } else {
+//                if (width == 0) {
+//                    // If menu is INVISIBLE, move it to outside. See isTouchMenu.
+//                    menuView.layout(right, menuView.top, right + menuView.width, menuView.bottom)
+//                } else {
+//                    menuView.layout(right - menuView.width, menuView.top, right, menuView.bottom)
+//                }
+//            }
+//        }
+//    }
+//
+//    class ParallaxDesigner : Designer {
+//
+//        private var leftMenu: View? = null
+//
+//        override fun onInit(parent: SwipeLayout, leftMenu: View?, rightMenu: View?) {
+//            this.leftMenu = leftMenu
+//            leftMenu?.visibility = View.INVISIBLE
+//            rightMenu?.visibility = View.INVISIBLE
+//        }
+//
+//        override fun onLayout(menuView: View, left: Int, top: Int, right: Int, bottom: Int) {
+//            val width = right - left
+//            menuView.visibility = if (width > 0) VISIBLE else INVISIBLE
+//            if (menuView == leftMenu) {
+//                if (width == 0) {
+//                    // If menu is INVISIBLE, move it to outside. See isTouchMenu.
+//                    menuView.layout(left - menuView.width, menuView.top, left, menuView.bottom)
+//                } else {
+//                    menuView.layout(right - menuView.width, menuView.top, right, menuView.bottom)
+//                    if (menuView is ViewGroup && menuView.childCount > 1) {
+//                        layoutLeftMenu(menuView, left, right)
+//                    }
+//                }
+//            } else {
+//                if (width == 0) {
+//                    // If menu is INVISIBLE, move it to outside. See isTouchMenu.
+//                    menuView.layout(right, menuView.top, right + menuView.width, menuView.bottom)
+//                } else {
+//                    menuView.layout(right - menuView.width, menuView.top, right, menuView.bottom)
+//                    if (menuView is ViewGroup && menuView.childCount > 0) {
+//                        layoutRightMenu(menuView, left, right)
+//                    }
+//                }
+//            }
+//        }
+//
+//        private fun layoutLeftMenu(menuView: ViewGroup, left: Int, right: Int) {
+//            val onScreen = (right - left).toFloat() / menuView.width
+//            var child = menuView.getChildAt(0)
+//            var childRight = menuView.width
+//            child.layout(childRight - child.width, child.top, childRight, child.bottom)
+//            var prevChild = child
+//            for (i in 1 until menuView.childCount) {
+//                child = menuView.getChildAt(i)
+//                childRight = (prevChild.right - prevChild.width * onScreen).toInt()
+//                child.layout(
+//                    childRight - child.width,
+//                    child.top,
+//                    childRight,
+//                    child.bottom
+//                )
+//                prevChild = child
+//            }
+//        }
+//
+//        private fun layoutRightMenu(menuView: ViewGroup, left: Int, right: Int) {
+//            val onScreen = (right - left).toFloat() / menuView.width
+//            var child = menuView.getChildAt(menuView.childCount - 1)
+//            var childLeft = menuView.width - (child.width * onScreen).toInt()
+//            child.layout(childLeft, child.top, childLeft + child.width, child.bottom)
+//            var prevChild = child
+//            for (i in menuView.childCount - 2 downTo 0) {
+//                child = menuView.getChildAt(i)
+//                childLeft = (prevChild.left - child.width * onScreen).toInt()
+//                child.layout(
+//                    childLeft,
+//                    child.top,
+//                    childLeft + child.width,
+//                    child.bottom
+//                )
+//                prevChild = child
+//            }
+//        }
+//    }
 }

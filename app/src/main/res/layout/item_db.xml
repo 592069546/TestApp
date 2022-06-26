@@ -5,20 +5,19 @@
     android:layout_height="wrap_content"
     android:layout_marginBottom="5dp"
     android:background="@color/design_dark_default_color_primary"
-    android:padding="10dp"
     app:autoClose="true"
     app:designer="com.example.pagingtest.view.SwipeLayout$ClassicDesigner"
     app:preview="none">
 
     <TextView
-        android:id="@+id/tv_right_menu"
+        android:id="@+id/tv_left_menu"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="start"
         android:background="@color/design_default_color_error"
         android:gravity="center_vertical"
         android:padding="10dp"
-        android:text="哈哈哈"
+        android:text="左边"
         android:textColor="#FFFFFF"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -29,6 +28,7 @@
         android:id="@+id/ll_content"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:padding="10dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/tv_left_menu"
         app:layout_constraintTop_toTopOf="parent">
@@ -46,14 +46,14 @@
     </LinearLayout>
 
     <TextView
-        android:id="@+id/tv_left_menu"
+        android:id="@+id/tv_right_menu"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="end"
         android:layout_marginStart="10dp"
         android:background="@color/design_default_color_error"
         android:padding="10dp"
-        android:text="哈哈哈"
+        android:text="右边长一点"
         android:textColor="#FFFFFF"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"

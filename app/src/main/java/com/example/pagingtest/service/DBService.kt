@@ -75,7 +75,8 @@ class DBService : Service() {
 //                }
 //                delay(100L)
 //            }
-            modify()
+            insert()
+//            modify()
             delay(100L)
         }
         return super.onStartCommand(intent, flags, startId)
