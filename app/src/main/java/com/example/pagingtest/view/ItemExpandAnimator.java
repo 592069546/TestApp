@@ -23,6 +23,7 @@ public class ItemExpandAnimator extends SimpleItemAnimator {
     private final static String TAG = ItemExpandAnimator.class.getSimpleName();
 
     private static final TimeInterpolator sDefaultInterpolator = new AccelerateDecelerateInterpolator();
+    private final static float SCALE_RATIO = 0.005f;
 
     private final List<RecyclerView.ViewHolder> mPendingRemovals = new ArrayList<>();
     private final List<RecyclerView.ViewHolder> mPendingAdditions = new ArrayList<>();
@@ -76,7 +77,7 @@ public class ItemExpandAnimator extends SimpleItemAnimator {
         Collections.sort(pendingRemovals, (holder1, holder2) -> Integer.compare(holder1.itemView.getTop(), holder2.itemView.getTop()));
         float translateY = 0;
         float translateZ = 0;
-        float scaleRatio = 0.005f;
+        float scaleRatio = SCALE_RATIO;
 
         for (RecyclerView.ViewHolder viewHolder : pendingRemovals) {
             final View view = viewHolder.itemView;
@@ -84,7 +85,8 @@ public class ItemExpandAnimator extends SimpleItemAnimator {
 
             translateY -= view.getHeight();
             translateZ--;
-            scaleRatio += scaleRatio;
+            if (scaleRatio < 0.5f)
+                scaleRatio += scaleRatio;
 
             mRemoveAnimations.add(viewHolder);
             animation
@@ -132,11 +134,12 @@ public class ItemExpandAnimator extends SimpleItemAnimator {
         Collections.sort(pendingAdditions, (holder1, holder2) -> Integer.compare(holder1.getAdapterPosition(), holder2.getAdapterPosition()));
         float translateY = 0;
         float translateZ = 0;
-        float scaleRatio = 0.005f;
+        float scaleRatio = SCALE_RATIO;
         for (RecyclerView.ViewHolder viewHolder : pendingAdditions) {
             translateY -= viewHolder.itemView.getHeight();
             translateZ--;
-            scaleRatio += scaleRatio;
+            if (scaleRatio < 0.5f)
+                scaleRatio += scaleRatio;
 
             viewHolder.itemView.setScaleX(1 - scaleRatio);
             viewHolder.itemView.setScaleY(1 - scaleRatio);
@@ -185,8 +188,8 @@ public class ItemExpandAnimator extends SimpleItemAnimator {
     @Override
     public boolean animateMove(RecyclerView.ViewHolder holder, int fromX, int fromY, int toX, int toY) {
         final View view = holder.itemView;
-        fromX += (int) holder.itemView.getTranslationX();
-        fromY += (int) holder.itemView.getTranslationY();
+        fromX += (int) view.getTranslationX();
+        fromY += (int) view.getTranslationY();
         resetAnimation(holder);
         int deltaX = toX - fromX;
         int deltaY = toY - fromY;
@@ -204,7 +207,7 @@ public class ItemExpandAnimator extends SimpleItemAnimator {
         return true;
     }
 
-    void animateMoveImpl(final RecyclerView.ViewHolder holder, int fromX, int fromY, int toX, int toY) {
+    private void animateMoveImpl(final RecyclerView.ViewHolder holder, int fromX, int fromY, int toX, int toY) {
         final View view = holder.itemView;
         final int deltaX = toX - fromX;
         final int deltaY = toY - fromY;
@@ -219,30 +222,33 @@ public class ItemExpandAnimator extends SimpleItemAnimator {
         // need listener functionality in VPACompat for this. Ick.
         final ViewPropertyAnimator animation = view.animate();
         mMoveAnimations.add(holder);
-        animation.setDuration(getMoveDuration()).setListener(new AnimatorListenerAdapter() {
-            @Override
-            public void onAnimationStart(Animator animator) {
-                dispatchMoveStarting(holder);
-            }
+        animation
+                .setDuration(getMoveDuration())
+                .setInterpolator(new DecelerateInterpolator())
+                .setListener(new AnimatorListenerAdapter() {
+                    @Override
+                    public void onAnimationStart(Animator animator) {
+                        dispatchMoveStarting(holder);
+                    }
 
-            @Override
-            public void onAnimationCancel(Animator animator) {
-                if (deltaX != 0) {
-                    view.setTranslationX(0);
-                }
-                if (deltaY != 0) {
-                    view.setTranslationY(0);
-                }
-            }
+                    @Override
+                    public void onAnimationCancel(Animator animator) {
+                        if (deltaX != 0) {
+                            view.setTranslationX(0);
+                        }
+                        if (deltaY != 0) {
+                            view.setTranslationY(0);
+                        }
+                    }
 
-            @Override
-            public void onAnimationEnd(Animator animator) {
-                animation.setListener(null);
-                dispatchMoveFinished(holder);
-                mMoveAnimations.remove(holder);
-                dispatchFinishedWhenDone();
-            }
-        }).start();
+                    @Override
+                    public void onAnimationEnd(Animator animator) {
+                        animation.setListener(null);
+                        dispatchMoveFinished(holder);
+                        mMoveAnimations.remove(holder);
+                        dispatchFinishedWhenDone();
+                    }
+                }).start();
     }
 
     /**
@@ -255,83 +261,29 @@ public class ItemExpandAnimator extends SimpleItemAnimator {
             // run a move animation to handle position changes.
             return animateMove(oldHolder, fromLeft, fromTop, toLeft, toTop);
         }
-        final float prevTranslationX = oldHolder.itemView.getTranslationX();
-        final float prevTranslationY = oldHolder.itemView.getTranslationY();
-        final float prevAlpha = oldHolder.itemView.getAlpha();
         resetAnimation(oldHolder);
-        int deltaX = (int) (toLeft - fromLeft - prevTranslationX);
-        int deltaY = (int) (toTop - fromTop - prevTranslationY);
-        // recover prev translation state after ending animation
-        oldHolder.itemView.setTranslationX(prevTranslationX);
-        oldHolder.itemView.setTranslationY(prevTranslationY);
-        oldHolder.itemView.setAlpha(prevAlpha);
+        dispatchChangeFinished(oldHolder, true);
         if (newHolder != null) {
-            // carry over translation values
             resetAnimation(newHolder);
-            newHolder.itemView.setTranslationX(-deltaX);
-            newHolder.itemView.setTranslationY(-deltaY);
-            newHolder.itemView.setAlpha(0);
+            dispatchChangeFinished(newHolder, false);
         }
-        mPendingChanges.add(new ChangeInfo(oldHolder, newHolder, fromLeft, fromTop, toLeft, toTop));
-        return true;
+        return false;
     }
 
-    void animateChangeImpl(final ChangeInfo changeInfo) {
+    private void animateChangeImpl(final ChangeInfo changeInfo) {
         final RecyclerView.ViewHolder holder = changeInfo.oldHolder;
         final View view = holder == null ? null : holder.itemView;
         final RecyclerView.ViewHolder newHolder = changeInfo.newHolder;
         final View newView = newHolder != null ? newHolder.itemView : null;
         if (view != null) {
-            final ViewPropertyAnimator oldViewAnim = view.animate();
-            mChangeAnimations.add(changeInfo.oldHolder);
-            oldViewAnim
-                    .translationX(changeInfo.toX - changeInfo.fromX)
-                    .translationY(changeInfo.toY - changeInfo.fromY)
-                    .alpha(0)
-                    .setDuration(getChangeDuration())
-                    .setListener(new AnimatorListenerAdapter() {
-                        @Override
-                        public void onAnimationStart(Animator animator) {
-                            dispatchChangeStarting(changeInfo.oldHolder, true);
-                        }
-
-                        @Override
-                        public void onAnimationEnd(Animator animator) {
-                            oldViewAnim.setListener(null);
-                            view.setAlpha(1);
-                            view.setTranslationX(0);
-                            view.setTranslationY(0);
-                            dispatchChangeFinished(changeInfo.oldHolder, true);
-                            mChangeAnimations.remove(changeInfo.oldHolder);
-                            dispatchFinishedWhenDone();
-                        }
-                    }).start();
+            dispatchChangeFinished(changeInfo.oldHolder, true);
+            dispatchFinishedWhenDone();
+            mChangeAnimations.remove(changeInfo.oldHolder);
         }
         if (newView != null) {
-            final ViewPropertyAnimator newViewAnimation = newView.animate();
-            mChangeAnimations.add(changeInfo.newHolder);
-            newViewAnimation
-                    .translationX(0)
-                    .translationY(0)
-                    .alpha(1)
-                    .setDuration(getChangeDuration())
-                    .setListener(new AnimatorListenerAdapter() {
-                        @Override
-                        public void onAnimationStart(Animator animator) {
-                            dispatchChangeStarting(changeInfo.newHolder, false);
-                        }
-
-                        @Override
-                        public void onAnimationEnd(Animator animator) {
-                            newViewAnimation.setListener(null);
-                            newView.setAlpha(1);
-                            newView.setTranslationX(0);
-                            newView.setTranslationY(0);
-                            dispatchChangeFinished(changeInfo.newHolder, false);
-                            mChangeAnimations.remove(changeInfo.newHolder);
-                            dispatchFinishedWhenDone();
-                        }
-                    }).start();
+            dispatchChangeFinished(changeInfo.newHolder, false);
+            mChangeAnimations.remove(changeInfo.newHolder);
+            dispatchFinishedWhenDone();
         }
     }
 
@@ -403,7 +355,7 @@ public class ItemExpandAnimator extends SimpleItemAnimator {
             };
             if (removalsPending) {
                 View view = moves.get(0).holder.itemView;
-                ViewCompat.postOnAnimationDelayed(view, mover, getRemoveDuration());
+                ViewCompat.postOnAnimation(view, mover);
             } else {
                 mover.run();
             }
@@ -446,7 +398,10 @@ public class ItemExpandAnimator extends SimpleItemAnimator {
                 long changeDuration = changesPending ? getChangeDuration() : 0;
                 long totalDelay = removeDuration + Math.max(moveDuration, changeDuration);
                 View view = additions.get(0).itemView;
-                ViewCompat.postOnAnimationDelayed(view, adder, totalDelay);
+                if (movesPending && !removalsPending && !changesPending)
+                    ViewCompat.postOnAnimation(view, adder);
+                else
+                    ViewCompat.postOnAnimationDelayed(view, adder, totalDelay);
             } else {
                 adder.run();
             }
@@ -473,11 +428,11 @@ public class ItemExpandAnimator extends SimpleItemAnimator {
         }
         endChangeAnimation(mPendingChanges, item);
         if (mPendingRemovals.remove(item)) {
-            view.setAlpha(1);
+            resetView(view);
             dispatchRemoveFinished(item);
         }
         if (mPendingAdditions.remove(item)) {
-            view.setAlpha(1);
+            resetView(view);
             dispatchAddFinished(item);
         }
 
@@ -507,7 +462,7 @@ public class ItemExpandAnimator extends SimpleItemAnimator {
         for (int i = mAdditionsList.size() - 1; i >= 0; i--) {
             List<RecyclerView.ViewHolder> additions = mAdditionsList.get(i);
             if (additions.remove(item)) {
-                view.setAlpha(1);
+                resetView(view);
                 dispatchAddFinished(item);
                 if (additions.isEmpty()) {
                     mAdditionsList.remove(i);
@@ -545,7 +500,7 @@ public class ItemExpandAnimator extends SimpleItemAnimator {
 
     private void resetView(View view) {
         view.setAlpha(1);
-        view.setTranslationZ(0);
+        view.setTranslationY(0);
         view.setTranslationZ(0);
         view.setScaleX(1);
         view.setScaleY(1);
@@ -574,7 +529,7 @@ public class ItemExpandAnimator extends SimpleItemAnimator {
         count = mPendingAdditions.size();
         for (int i = count - 1; i >= 0; i--) {
             RecyclerView.ViewHolder item = mPendingAdditions.get(i);
-            item.itemView.setAlpha(1);
+            resetView(item.itemView);
             dispatchAddFinished(item);
             mPendingAdditions.remove(i);
         }
@@ -611,7 +566,7 @@ public class ItemExpandAnimator extends SimpleItemAnimator {
             for (int j = count - 1; j >= 0; j--) {
                 RecyclerView.ViewHolder item = additions.get(j);
                 View view = item.itemView;
-                view.setAlpha(1);
+                resetView(view);
                 dispatchAddFinished(item);
                 additions.remove(j);
                 if (additions.isEmpty()) {
