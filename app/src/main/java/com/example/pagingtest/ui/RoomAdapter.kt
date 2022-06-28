@@ -38,7 +38,7 @@ class RoomAdapter : RecyclerView.Adapter<RoomAdapter.RoomViewHolder>() {
         differ.submitList(userList)
     }
 
-    private fun getList() = differ.currentList
+    fun getList(): List<User> = differ.currentList
 
     class RoomViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val tv_id: TextView by lazy { view.findViewById(R.id.tv_id) }

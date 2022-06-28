@@ -21,9 +21,18 @@ interface UserDao {
     @Insert(onConflict = REPLACE)
     suspend fun insert(user: User)
 
+    @Insert(onConflict = REPLACE)
+    suspend fun insertUsers(users: List<User>)
+
     @Delete
     suspend fun delete(user: User)
 
+    @Delete
+    suspend fun delete(users: List<User>)
+
     @Update
     suspend fun update(user: User): Int
+
+    @Query("delete from user")
+    suspend fun clear()
 }

@@ -24,6 +24,7 @@ class MainActivity : AppCompatActivity() {
     private val roomAdapter by lazy { RoomAdapter() }
 
     private val tv_insert: TextView by lazy { findViewById(R.id.tv_insert) }
+    private val tv_clear: TextView by lazy { findViewById(R.id.tv_clear) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -38,11 +39,15 @@ class MainActivity : AppCompatActivity() {
         val itemTouchHelper = ItemTouchHelper(ItemTouchHelperCallback())
         itemTouchHelper.attachToRecyclerView(rv_db)
 
-        rv_db.itemAnimator = ItemExpandAnimator(this)
+        rv_db.itemAnimator = ItemExpandAnimator()
 
         tv_insert.setOnClickListener {
             startService(Intent(this, DBService::class.java))
 //            mainViewModel.onPost()
+        }
+
+        tv_clear.setOnClickListener {
+            mainViewModel.delete(roomAdapter.getList().subList(0, 6))
         }
 
         startService(Intent(this, DBService::class.java))

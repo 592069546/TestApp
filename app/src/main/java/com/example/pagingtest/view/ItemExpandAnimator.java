@@ -3,12 +3,10 @@ package com.example.pagingtest.view;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.TimeInterpolator;
-import android.content.Context;
 import android.view.View;
 import android.view.ViewPropertyAnimator;
 import android.view.animation.AccelerateDecelerateInterpolator;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
+import android.view.animation.DecelerateInterpolator;
 
 import androidx.annotation.NonNull;
 import androidx.core.view.ViewCompat;
@@ -16,12 +14,14 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.SimpleItemAnimator;
 
 import com.example.pagingtest.BuildConfig;
-import com.example.pagingtest.R;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class ItemExpandAnimator extends SimpleItemAnimator {
+    private final static String TAG = ItemExpandAnimator.class.getSimpleName();
+
     private static final TimeInterpolator sDefaultInterpolator = new AccelerateDecelerateInterpolator();
 
     private final List<RecyclerView.ViewHolder> mPendingRemovals = new ArrayList<>();
@@ -38,10 +38,28 @@ public class ItemExpandAnimator extends SimpleItemAnimator {
     private final List<RecyclerView.ViewHolder> mRemoveAnimations = new ArrayList<>();
     private final List<RecyclerView.ViewHolder> mChangeAnimations = new ArrayList<>();
 
-    private final Animation anim;
+    public ItemExpandAnimator() {
 
-    public ItemExpandAnimator(Context context) {
-        anim = AnimationUtils.loadAnimation(context, R.anim.anim_db);
+    }
+
+    @Override
+    public long getMoveDuration() {
+        return 400;
+    }
+
+    @Override
+    public long getAddDuration() {
+        return 400;
+    }
+
+    @Override
+    public long getChangeDuration() {
+        return 400;
+    }
+
+    @Override
+    public long getRemoveDuration() {
+        return 400;
     }
 
     /**
@@ -54,42 +72,49 @@ public class ItemExpandAnimator extends SimpleItemAnimator {
         return true;
     }
 
-    private void animateRemoveImpl(final RecyclerView.ViewHolder holder) {
-        final View view = holder.itemView;
-        final ViewPropertyAnimator animation = view.animate();
-        mRemoveAnimations.add(holder);
-        animation.setDuration(getRemoveDuration()).alpha(0).setListener(
-                new AnimatorListenerAdapter() {
-                    @Override
-                    public void onAnimationStart(Animator animator) {
-                        dispatchRemoveStarting(holder);
-                    }
+    private void animateRemoveImpl(List<RecyclerView.ViewHolder> pendingRemovals) {
+        Collections.sort(pendingRemovals, (holder1, holder2) -> Integer.compare(holder1.itemView.getTop(), holder2.itemView.getTop()));
+        float translateY = 0;
+        float translateZ = 0;
+        float scaleRatio = 0.005f;
 
-                    @Override
-                    public void onAnimationEnd(Animator animator) {
-                        animation.setListener(null);
-                        view.setAlpha(1);
-                        dispatchRemoveFinished(holder);
-                        mRemoveAnimations.remove(holder);
-                        dispatchFinishedWhenDone();
-                    }
-                }).start();
-        anim.setAnimationListener(new Animation.AnimationListener() {
-            @Override
-            public void onAnimationStart(Animation animation) {
+        for (RecyclerView.ViewHolder viewHolder : pendingRemovals) {
+            final View view = viewHolder.itemView;
+            final ViewPropertyAnimator animation = view.animate();
 
-            }
+            translateY -= view.getHeight();
+            translateZ--;
+            scaleRatio += scaleRatio;
 
-            @Override
-            public void onAnimationEnd(Animation animation) {
+            mRemoveAnimations.add(viewHolder);
+            animation
+                    .translationY(translateY)
+                    .translationZ(translateZ)
+                    .scaleX(1 - scaleRatio)
+                    .scaleY(1 - scaleRatio)
+                    .setDuration(getRemoveDuration())
+                    .setInterpolator(new DecelerateInterpolator())
+                    .setListener(new AnimatorListenerAdapter() {
+                        @Override
+                        public void onAnimationStart(Animator animator) {
+                            dispatchRemoveStarting(viewHolder);
+                        }
 
-            }
+                        @Override
+                        public void onAnimationEnd(Animator animator) {
+                            animation.setListener(null);
+                            resetView(view);
+                            dispatchRemoveFinished(viewHolder);
+                            mRemoveAnimations.remove(viewHolder);
+                            dispatchFinishedWhenDone();
+                        }
 
-            @Override
-            public void onAnimationRepeat(Animation animation) {
-
-            }
-        });
+                        @Override
+                        public void onAnimationCancel(Animator animation) {
+                            resetView(view);
+                        }
+                    }).start();
+        }
     }
 
     /**
@@ -103,25 +128,50 @@ public class ItemExpandAnimator extends SimpleItemAnimator {
         return true;
     }
 
-    void animateAddImpl(final RecyclerView.ViewHolder holder) {
+    private void initAddAnimProperty(List<RecyclerView.ViewHolder> pendingAdditions) {
+        Collections.sort(pendingAdditions, (holder1, holder2) -> Integer.compare(holder1.getAdapterPosition(), holder2.getAdapterPosition()));
+        float translateY = 0;
+        float translateZ = 0;
+        float scaleRatio = 0.005f;
+        for (RecyclerView.ViewHolder viewHolder : pendingAdditions) {
+            translateY -= viewHolder.itemView.getHeight();
+            translateZ--;
+            scaleRatio += scaleRatio;
+
+            viewHolder.itemView.setScaleX(1 - scaleRatio);
+            viewHolder.itemView.setScaleY(1 - scaleRatio);
+            viewHolder.itemView.setTranslationY(translateY);
+            viewHolder.itemView.setTranslationZ(translateZ);
+        }
+    }
+
+    private void animateAddImpl(final RecyclerView.ViewHolder holder) {
         final View view = holder.itemView;
-        final ViewPropertyAnimator animation = view.animate();
         mAddAnimations.add(holder);
-        animation.alpha(1).setDuration(getAddDuration())
+        final ViewPropertyAnimator animation = view.animate();
+        animation
+                .translationY(0)
+                .translationZ(0)
+                .scaleX(1)
+                .scaleY(1)
+                .setDuration(getAddDuration())
+                .setInterpolator(new DecelerateInterpolator())
                 .setListener(new AnimatorListenerAdapter() {
                     @Override
                     public void onAnimationStart(Animator animator) {
+                        view.setAlpha(1);
                         dispatchAddStarting(holder);
                     }
 
                     @Override
                     public void onAnimationCancel(Animator animator) {
-                        view.setAlpha(1);
+                        resetView(view);
                     }
 
                     @Override
                     public void onAnimationEnd(Animator animator) {
                         animation.setListener(null);
+                        view.setAlpha(1);
                         dispatchAddFinished(holder);
                         mAddAnimations.remove(holder);
                         dispatchFinishedWhenDone();
@@ -232,34 +282,40 @@ public class ItemExpandAnimator extends SimpleItemAnimator {
         final RecyclerView.ViewHolder newHolder = changeInfo.newHolder;
         final View newView = newHolder != null ? newHolder.itemView : null;
         if (view != null) {
-            final ViewPropertyAnimator oldViewAnim = view.animate().setDuration(
-                    getChangeDuration());
+            final ViewPropertyAnimator oldViewAnim = view.animate();
             mChangeAnimations.add(changeInfo.oldHolder);
-            oldViewAnim.translationX(changeInfo.toX - changeInfo.fromX);
-            oldViewAnim.translationY(changeInfo.toY - changeInfo.fromY);
-            oldViewAnim.alpha(0).setListener(new AnimatorListenerAdapter() {
-                @Override
-                public void onAnimationStart(Animator animator) {
-                    dispatchChangeStarting(changeInfo.oldHolder, true);
-                }
+            oldViewAnim
+                    .translationX(changeInfo.toX - changeInfo.fromX)
+                    .translationY(changeInfo.toY - changeInfo.fromY)
+                    .alpha(0)
+                    .setDuration(getChangeDuration())
+                    .setListener(new AnimatorListenerAdapter() {
+                        @Override
+                        public void onAnimationStart(Animator animator) {
+                            dispatchChangeStarting(changeInfo.oldHolder, true);
+                        }
 
-                @Override
-                public void onAnimationEnd(Animator animator) {
-                    oldViewAnim.setListener(null);
-                    view.setAlpha(1);
-                    view.setTranslationX(0);
-                    view.setTranslationY(0);
-                    dispatchChangeFinished(changeInfo.oldHolder, true);
-                    mChangeAnimations.remove(changeInfo.oldHolder);
-                    dispatchFinishedWhenDone();
-                }
-            }).start();
+                        @Override
+                        public void onAnimationEnd(Animator animator) {
+                            oldViewAnim.setListener(null);
+                            view.setAlpha(1);
+                            view.setTranslationX(0);
+                            view.setTranslationY(0);
+                            dispatchChangeFinished(changeInfo.oldHolder, true);
+                            mChangeAnimations.remove(changeInfo.oldHolder);
+                            dispatchFinishedWhenDone();
+                        }
+                    }).start();
         }
         if (newView != null) {
             final ViewPropertyAnimator newViewAnimation = newView.animate();
             mChangeAnimations.add(changeInfo.newHolder);
-            newViewAnimation.translationX(0).translationY(0).setDuration(getChangeDuration())
-                    .alpha(1).setListener(new AnimatorListenerAdapter() {
+            newViewAnimation
+                    .translationX(0)
+                    .translationY(0)
+                    .alpha(1)
+                    .setDuration(getChangeDuration())
+                    .setListener(new AnimatorListenerAdapter() {
                         @Override
                         public void onAnimationStart(Animator animator) {
                             dispatchChangeStarting(changeInfo.newHolder, false);
@@ -330,9 +386,7 @@ public class ItemExpandAnimator extends SimpleItemAnimator {
             return;
         }
         // First, remove stuff
-        for (RecyclerView.ViewHolder holder : mPendingRemovals) {
-            animateRemoveImpl(holder);
-        }
+        animateRemoveImpl(mPendingRemovals);
         mPendingRemovals.clear();
         // Next, move stuff
         if (movesPending) {
@@ -376,6 +430,7 @@ public class ItemExpandAnimator extends SimpleItemAnimator {
         // Next, add stuff
         if (additionsPending) {
             final List<RecyclerView.ViewHolder> additions = new ArrayList<>(mPendingAdditions);
+            initAddAnimProperty(additions);
             mAdditionsList.add(additions);
             mPendingAdditions.clear();
             Runnable adder = () -> {
@@ -486,6 +541,14 @@ public class ItemExpandAnimator extends SimpleItemAnimator {
     private void resetAnimation(RecyclerView.ViewHolder holder) {
         holder.itemView.animate().setInterpolator(sDefaultInterpolator);
         endAnimation(holder);
+    }
+
+    private void resetView(View view) {
+        view.setAlpha(1);
+        view.setTranslationZ(0);
+        view.setTranslationZ(0);
+        view.setScaleX(1);
+        view.setScaleY(1);
     }
 
     /**

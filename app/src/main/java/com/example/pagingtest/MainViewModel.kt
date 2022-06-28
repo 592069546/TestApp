@@ -53,6 +53,10 @@ class MainViewModel(private val userRepository: UserRepository) : ViewModel() {
 
     fun insertUser(user: User) = viewModelScope.launch { userRepository.insertUser(user) }
 
+    fun delete(users: List<User>) {
+        viewModelScope.launch(IO) { userRepository.deleteUsers(users) }
+    }
+
     companion object {
         val TAG = MainViewModel::class.java.simpleName
     }

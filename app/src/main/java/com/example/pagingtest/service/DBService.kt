@@ -97,7 +97,8 @@ class DBService : Service() {
 
     private suspend fun insert() {
         Log.d(TAG, "insert")
-        userRepository.insertUser(User.newUser())
+//        userRepository.insertUser(User.newUser())
+        userRepository.insertUsers()
         delay(100L)
     }
 
