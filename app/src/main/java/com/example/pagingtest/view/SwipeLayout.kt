@@ -56,6 +56,8 @@ class SwipeLayout @JvmOverloads constructor(
 
     private val dragger = ViewDragHelper.create(this, ViewDragCallback())
 
+    private val gestureDetector: GestureDetector
+
     private var openState = 0
     private var activeMenu: View? = null
     internal var onScreen = 0f
@@ -98,6 +100,7 @@ class SwipeLayout @JvmOverloads constructor(
 //        }
 //        this.designer = designer ?: ClassicDesigner()
         this.designer = ClassicDesigner()
+        gestureDetector = GestureDetector(context, GestureListener())
     }
 
     /**
@@ -352,6 +355,7 @@ class SwipeLayout @JvmOverloads constructor(
 
     @SuppressLint("ClickableViewAccessibility")
     override fun onTouchEvent(ev: MotionEvent): Boolean {
+        gestureDetector.onTouchEvent(ev)
         processTouchEvent(ev)
         return true
     }
@@ -504,6 +508,13 @@ class SwipeLayout @JvmOverloads constructor(
                     else -> closeActiveMenu()
                 }
             }
+        }
+    }
+
+    private inner class GestureListener : GestureDetector.SimpleOnGestureListener() {
+        override fun onSingleTapConfirmed(e: MotionEvent?): Boolean {
+            performClick()
+            return true
         }
     }
 
