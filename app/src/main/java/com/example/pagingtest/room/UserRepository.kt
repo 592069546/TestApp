@@ -8,9 +8,9 @@ class UserRepository(private val userDao: UserDao) {
     // 单例用于统一一个flow
     val allUsers = userDao.getAll()
 
-    val singleHalfUsers = userDao.getSingleHalf()
+    val singleHalfUsers = userDao.getHalf(1)
 
-    val twiceHalfUsers = userDao.getTwiceHalf()
+    val twiceHalfUsers = userDao.getHalf(0)
 
     suspend fun insertUser(user: User) {
         withContext(IO) {
@@ -18,9 +18,8 @@ class UserRepository(private val userDao: UserDao) {
         }
     }
 
-    suspend fun insertUsers() {
+    suspend fun insertUsers(list: List<User> = User.newUserList(65, 20)) {
         withContext(IO) {
-            val list = User.newUserList(65)
             userDao.insertUsers(list)
         }
     }

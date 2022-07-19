@@ -29,7 +29,7 @@ class RoomAdapter : RecyclerView.Adapter<RoomAdapter.RoomViewHolder>() {
     override fun onBindViewHolder(holder: RoomViewHolder, position: Int) {
         val user = getList()[position]
         holder.tv_id.text = user.uid.toString()
-        holder.tv_name.text = "${user.firstName} ${user.lastName}"
+        holder.tv_name.text = "${user.firstName} ${user.lastName} ${user.age}"
     }
 
     override fun getItemCount(): Int = getList().size
@@ -48,6 +48,10 @@ class RoomAdapter : RecyclerView.Adapter<RoomAdapter.RoomViewHolder>() {
         init {
             tv_left_menu.setOnClickListener {
                 Toast.makeText(it.context, "点击左边", Toast.LENGTH_SHORT).show()
+            }
+
+            itemView.setOnClickListener {
+                Toast.makeText(it.context, "点击content", Toast.LENGTH_SHORT).show()
             }
         }
     }

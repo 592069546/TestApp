@@ -36,8 +36,8 @@ class MainActivity : AppCompatActivity() {
 
 //        ItemSwipeTouchHelper(ItemTouchHelperCallback(), rv_db)
 
-        val itemTouchHelper = ItemTouchHelper(ItemTouchHelperCallback())
-        itemTouchHelper.attachToRecyclerView(rv_db)
+//        val itemTouchHelper = ItemTouchHelper(ItemTouchHelperCallback())
+//        itemTouchHelper.attachToRecyclerView(rv_db)
 
         rv_db.itemAnimator = ItemExpandAnimator()
 

@@ -9,11 +9,8 @@ interface UserDao {
     @Query("SELECT * FROM user")
     fun getAll(): Flow<List<User>>
 
-    @Query("SELECT * FROM user WHERE uid % 2 == 1")
-    fun getSingleHalf(): Flow<List<User>>
-
-    @Query("SELECT * FROM user WHERE uid % 2 == 0")
-    fun getTwiceHalf(): Flow<List<User>>
+    @Query("SELECT * FROM user WHERE uid % 2 == :count ORDER BY age")
+    fun getHalf(count: Int): Flow<List<User>>
 
     @Insert
     suspend fun insertAll(vararg users: User)

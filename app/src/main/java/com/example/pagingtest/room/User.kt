@@ -8,7 +8,8 @@ import androidx.room.PrimaryKey
 data class User(
     @PrimaryKey val uid: Int = 0,
     @ColumnInfo(name = "first_name") var firstName: String?,
-    @ColumnInfo(name = "last_name") var lastName: String?
+    @ColumnInfo(name = "last_name") var lastName: String?,
+    @ColumnInfo(name = "age", defaultValue = "0") var age: Int = (System.currentTimeMillis() % 232).toInt()
 ) {
     companion object {
         fun newUser(
@@ -20,19 +21,16 @@ data class User(
         )
 
         fun newUserList(
-            id: Int = ((System.currentTimeMillis() + IntRange(0, 99).random()) % 100).toInt()
-        ): List<User> = listOf(
-            newUser(id + 1),
-            newUser(id + 2),
-            newUser(id + 3),
-            newUser(id + 4),
-            newUser(id + 5),
-            newUser(id + 6)
-        )
+            id: Int = ((System.currentTimeMillis() + IntRange(0, 99).random()) % 100).toInt(),
+            size: Int = 8
+        ): List<User> = MutableList(size) {
+            newUser(id + it)
+        }.toList()
     }
 
     fun update() {
         firstName = (System.currentTimeMillis() % 120).toString()
         lastName = (System.currentTimeMillis() % 220).toString()
+        age = (System.currentTimeMillis() % 232).toInt()
     }
 }

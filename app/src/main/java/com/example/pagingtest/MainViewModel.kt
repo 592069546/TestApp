@@ -43,6 +43,22 @@ class MainViewModel(private val userRepository: UserRepository) : ViewModel() {
                 Log.d(TAG, "$it")
             }
         }
+
+        viewModelScope.launch(IO) {
+            userRepository.singleHalfUsers
+                .distinctUntilChanged()
+                .collect {
+                    Log.d(TAG, "single ${it.size}")
+                }
+        }
+
+        viewModelScope.launch(IO) {
+            userRepository.twiceHalfUsers
+                .distinctUntilChanged()
+                .collect {
+                    Log.d(TAG, "twice ${it.size}")
+                }
+        }
     }
 
     fun onPost() {
