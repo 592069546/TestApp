@@ -6,12 +6,10 @@ import android.util.Log
 import android.widget.TextView
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.pagingtest.room.AppDatabase
 import com.example.pagingtest.service.DBService
-import com.example.pagingtest.ui.ItemTouchHelperCallback
 import com.example.pagingtest.ui.RoomAdapter
 import com.example.pagingtest.view.ItemExpandAnimator
 
@@ -72,10 +70,6 @@ class MainActivity : AppCompatActivity() {
 
         mainViewModel.twiceHalfUsers.observe(this) {
             Log.d(TAG, "twice half ****** ${it.size}")
-        }
-
-        mainViewModel.combineUsers.observe(this) {
-            Log.d(TAG, "user ****** ${it.size}")
         }
     }
 

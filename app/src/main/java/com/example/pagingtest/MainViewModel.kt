@@ -45,25 +45,11 @@ class MainViewModel(private val userRepository: UserRepository) : ViewModel() {
             }
         }
 
-        viewModelScope.launch(IO) {
-            userRepository.singleHalfUsers
-                .distinctUntilChanged()
-                .collect {
-                    Log.d(TAG, "single ${it.size}")
-                }
-        }
+        if (test_distinct)
+            testFlowDistinct(userRepository)
 
-        if (retry) {
+        if (retry)
             retry()
-        }
-
-        viewModelScope.launch(IO) {
-            userRepository.twiceHalfUsers
-                .distinctUntilChanged()
-                .collect {
-                    Log.d(TAG, "twice ${it.size}")
-                }
-        }
 
         viewModelScope.launch(IO) {
             userRepository.clear()
@@ -84,8 +70,9 @@ class MainViewModel(private val userRepository: UserRepository) : ViewModel() {
     }
 
     companion object {
-        val TAG = MainViewModel::class.java.simpleName
+        val TAG: String = MainViewModel::class.java.simpleName
 
+        private const val test_distinct = false
         private const val retry = false
     }
 }
@@ -114,6 +101,24 @@ fun MainViewModel.retry() {
             }
             .collect {
                 Log.d(MainViewModel.TAG, "***** collect $it")
+            }
+    }
+}
+
+fun MainViewModel.testFlowDistinct(userRepository: UserRepository) {
+    viewModelScope.launch(IO) {
+        userRepository.singleHalfUsers
+            .distinctUntilChanged()
+            .collect {
+                Log.d(MainViewModel.TAG, "single ${it.size}")
+            }
+    }
+
+    viewModelScope.launch(IO) {
+        userRepository.twiceHalfUsers
+            .distinctUntilChanged()
+            .collect {
+                Log.d(MainViewModel.TAG, "twice ${it.size}")
             }
     }
 }
