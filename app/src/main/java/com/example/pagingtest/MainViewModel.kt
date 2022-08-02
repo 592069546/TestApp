@@ -8,6 +8,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.pagingtest.room.User
 import com.example.pagingtest.room.UserRepository
 import kotlinx.coroutines.Dispatchers.IO
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
@@ -52,12 +53,21 @@ class MainViewModel(private val userRepository: UserRepository) : ViewModel() {
                 }
         }
 
+        if (retry) {
+            retry()
+        }
+
         viewModelScope.launch(IO) {
             userRepository.twiceHalfUsers
                 .distinctUntilChanged()
                 .collect {
                     Log.d(TAG, "twice ${it.size}")
                 }
+        }
+
+        viewModelScope.launch(IO) {
+            userRepository.clear()
+            userRepository.insertUser(User.newUser())
         }
     }
 
@@ -75,6 +85,36 @@ class MainViewModel(private val userRepository: UserRepository) : ViewModel() {
 
     companion object {
         val TAG = MainViewModel::class.java.simpleName
+
+        private const val retry = false
+    }
+}
+
+fun MainViewModel.retry() {
+    viewModelScope.launch {
+        flow {
+            emit(0)
+            delay(100)
+            val sss = 1 / 0
+            emit(sss)
+            delay(100)
+            emit(2)
+        }
+            .retryWhen { e: Throwable, tryTime: Long ->
+                Log.d(MainViewModel.TAG, "***** retry $tryTime $e")
+                if (tryTime < 2)
+                    true
+                else {
+                    emit(3)
+                    false
+                }
+            }
+            .catch {
+                Log.d(MainViewModel.TAG, "***** catch")
+            }
+            .collect {
+                Log.d(MainViewModel.TAG, "***** collect $it")
+            }
     }
 }
 
