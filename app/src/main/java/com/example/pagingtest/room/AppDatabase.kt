@@ -5,16 +5,19 @@ import androidx.room.AutoMigration
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
+import com.example.pagingtest.room.DBConst.FuckerTableName
 
 @Database(
-    entities = [User::class], version = 2,
+    entities = [User::class, Fucker::class], version = 3,
     autoMigrations = [
-        AutoMigration (from = 1, to = 2)
+        AutoMigration(from = 1, to = 2)
     ]
 )
 abstract class AppDatabase : RoomDatabase() {
     abstract fun userDao(): UserDao
+    abstract fun fuckerDao(): FuckerDao
 
     companion object {
         private val DATABASE_NAME = "RoomTest"
@@ -26,6 +29,9 @@ abstract class AppDatabase : RoomDatabase() {
         @Volatile
         private var userRepository: UserRepository? = null
 
+        @Volatile
+        private var fuckerRepository: FuckerRepository? = null
+
         fun getInstance(context: Context): AppDatabase {
             return instance ?: synchronized(this) {
                 instance ?: buildDatabase(context).also { instance = it }
@@ -35,6 +41,12 @@ abstract class AppDatabase : RoomDatabase() {
         fun getUserRepository(context: Context) = userRepository ?: synchronized(this) {
             userRepository ?: UserRepository(getInstance(context).userDao()).also {
                 userRepository = it
+            }
+        }
+
+        fun getFuckerRepository(context: Context) = fuckerRepository ?: synchronized(this) {
+            fuckerRepository ?: FuckerRepository(getInstance(context).fuckerDao()).also {
+                fuckerRepository = it
             }
         }
 
@@ -52,7 +64,15 @@ abstract class AppDatabase : RoomDatabase() {
                         }
                     }
                 )
+                .addMigrations(Migiration_2_3())
                 .build()
         }
+    }
+}
+
+
+class Migiration_2_3 : Migration(2, 3) {
+    override fun migrate(database: SupportSQLiteDatabase) {
+        database.execSQL("CREATE TABLE IF NOT EXISTS $FuckerTableName (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `fuckName` TEXT NOT NULL, `fuckNum` INTEGER NOT NULL)")
     }
 }

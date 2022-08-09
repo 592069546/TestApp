@@ -15,7 +15,10 @@ import com.example.pagingtest.view.ItemExpandAnimator
 
 class MainActivity : AppCompatActivity() {
     private val mainViewModel: MainViewModel by viewModels {
-        MainViewModelFactory(AppDatabase.getUserRepository(this))
+        MainViewModelFactory(
+            AppDatabase.getUserRepository(this),
+            AppDatabase.getFuckerRepository(this)
+        )
     }
 
     private val rv_db: RecyclerView by lazy { findViewById(R.id.rv_db) }
