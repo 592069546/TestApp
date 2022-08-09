@@ -40,8 +40,9 @@ class MainActivity : AppCompatActivity() {
         rv_db.itemAnimator = ItemExpandAnimator()
 
         tv_insert.setOnClickListener {
-            startService(Intent(this, DBService::class.java))
+//            startService(Intent(this, DBService::class.java))
 //            mainViewModel.onPost()
+            mainViewModel.flowRetry()
         }
 
         tv_clear.setOnClickListener {

@@ -5,9 +5,12 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
+import com.example.pagingtest.MainViewModel.Companion.TAG
 import com.example.pagingtest.room.User
 import com.example.pagingtest.room.UserRepository
+import com.example.pagingtest.test.FlowRetry
 import kotlinx.coroutines.Dispatchers.IO
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
@@ -35,6 +38,19 @@ class MainViewModel(private val userRepository: UserRepository) : ViewModel() {
     ).asLiveData()
 
     private val conflateFlow = MutableStateFlow(0)
+
+    val emitFlow = flow {
+        emit(1)
+        delay(500)
+        emit(2)
+        delay(500)
+        emit(3)
+        delay(500)
+        emit(4)
+        delay(500)
+        emit(5)
+    }
+    var emitJob: Job? = null
 
     init {
         viewModelScope.launch(IO) {
@@ -88,7 +104,7 @@ fun MainViewModel.retry() {
             emit(2)
         }
             .retryWhen { e: Throwable, tryTime: Long ->
-                Log.d(MainViewModel.TAG, "***** retry $tryTime $e")
+                Log.d(TAG, "***** retry $tryTime $e")
                 if (tryTime < 2)
                     true
                 else {
@@ -97,10 +113,10 @@ fun MainViewModel.retry() {
                 }
             }
             .catch {
-                Log.d(MainViewModel.TAG, "***** catch")
+                Log.d(TAG, "***** catch")
             }
             .collect {
-                Log.d(MainViewModel.TAG, "***** collect $it")
+                Log.d(TAG, "***** collect $it")
             }
     }
 }
@@ -110,7 +126,7 @@ fun MainViewModel.testFlowDistinct(userRepository: UserRepository) {
         userRepository.singleHalfUsers
             .distinctUntilChanged()
             .collect {
-                Log.d(MainViewModel.TAG, "single ${it.size}")
+                Log.d(TAG, "single ${it.size}")
             }
     }
 
@@ -118,9 +134,13 @@ fun MainViewModel.testFlowDistinct(userRepository: UserRepository) {
         userRepository.twiceHalfUsers
             .distinctUntilChanged()
             .collect {
-                Log.d(MainViewModel.TAG, "twice ${it.size}")
+                Log.d(TAG, "twice ${it.size}")
             }
     }
+}
+
+fun MainViewModel.flowRetry() {
+    FlowRetry.RetryTest2(emitJob, scope = viewModelScope, emitFlow).test()
 }
 
 class MainViewModelFactory(private val userRepository: UserRepository) : ViewModelProvider.Factory {
