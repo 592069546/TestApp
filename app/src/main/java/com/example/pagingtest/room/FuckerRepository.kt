@@ -6,9 +6,11 @@ import kotlinx.coroutines.withContext
 class FuckerRepository(private val dao: FuckerDao) {
     val fuckers = dao.getAllFucker()
 
-    suspend fun insertFucker(fucker: Fucker) {
-        withContext(IO) {
-            dao.insertFucker(fucker)
-        }
+    suspend fun insertFucker(fucker: Fucker) = withContext(IO) {
+        dao.insertFucker(fucker)
+    }
+
+    suspend fun queryFucker(id: Int) = withContext(IO) {
+        dao.queryFucker(id)
     }
 }

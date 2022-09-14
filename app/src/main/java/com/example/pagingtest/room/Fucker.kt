@@ -13,5 +13,7 @@ class Fucker(
     @ColumnInfo(name = FuckerName) val fuckerName: String = "fucker",
     @ColumnInfo(name = FuckerNum) val fuckNum: Int = 0
 ) {
-
+    override fun toString(): String {
+        return "Fucker(id=$id, fuckerName='$fuckerName', fuckNum=$fuckNum)"
+    }
 }

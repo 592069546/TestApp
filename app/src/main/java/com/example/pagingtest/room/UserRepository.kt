@@ -12,6 +12,8 @@ class UserRepository(private val userDao: UserDao) {
 
     val twiceHalfUsers = userDao.getHalf(0)
 
+    suspend fun query() = userDao.getUser()
+
     suspend fun insertUser(user: User) {
         withContext(IO) {
             userDao.insert(user)

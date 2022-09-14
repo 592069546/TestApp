@@ -32,4 +32,7 @@ interface UserDao {
 
     @Query("delete from user")
     suspend fun clear()
+
+    @Query("select * from user where uid = 5")
+    suspend fun getUser(): User?
 }
