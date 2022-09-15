@@ -75,10 +75,17 @@ class MainViewModel(
         viewModelScope.launch(IO) {
             userRepository.clear()
             userRepository.insertUser(User.newUser())
+
+            val user = userRepository.query()
+            Log.d(TAG, user.toString())
         }
 
         viewModelScope.launch(IO) {
-            fuckerRepository.insertFucker(Fucker())
+            fuckerRepository.insertFucker(Fucker(fuckNum = 123)).let {
+                Log.d(TAG, "fucker id: $it")
+                val fucker = fuckerRepository.queryFucker(it.toInt())
+                Log.d(TAG, "fucker $fucker")
+            }
             fuckerRepository.insertFucker(Fucker())
         }
 

@@ -8,6 +8,7 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.pagingtest.compose.ComposeActivity
 import com.example.pagingtest.room.AppDatabase
 import com.example.pagingtest.service.DBService
 import com.example.pagingtest.ui.RoomAdapter
@@ -49,7 +50,8 @@ class MainActivity : AppCompatActivity() {
         }
 
         tv_clear.setOnClickListener {
-            mainViewModel.delete(roomAdapter.getList().subList(0, 6))
+//            mainViewModel.delete(roomAdapter.getList().subList(0, 6))
+            startActivity(Intent(this, ComposeActivity::class.java))
         }
 
         startService(Intent(this, DBService::class.java))
@@ -78,6 +80,6 @@ class MainActivity : AppCompatActivity() {
     }
 
     companion object {
-        val TAG = MainActivity::class.java.simpleName
+        private val TAG = MainActivity::class.java.simpleName
     }
 }
