@@ -24,6 +24,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".compose.ComposeActivity" />
+        <activity android:name=".navigation.NavigationActivity" />
 
         <service android:name=".service.DBService" />
 
