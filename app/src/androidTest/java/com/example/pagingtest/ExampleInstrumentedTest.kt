@@ -1,5 +1,6 @@
 package com.example.pagingtest
 
+import android.os.Build
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.ext.junit.runners.AndroidJUnit4
 
@@ -19,6 +20,7 @@ class ExampleInstrumentedTest {
     fun useAppContext() {
         // Context of the app under test.
         val appContext = InstrumentationRegistry.getInstrumentation().targetContext
+        println("model  ${Build.MODEL}")
         assertEquals("com.example.pagingtest", appContext.packageName)
     }
 }
