@@ -1,3 +1,6 @@
 <resources>
     <string name="app_name">pagingTest</string>
+    <string name="permission_request_content">缺少权限程序将无法正常运行，打开\'设置\'修改程序的权限。</string>
+    <string name="permission_request_title">获取权限</string>
+    <string name="ok">好的</string>
 </resources>
