@@ -10,8 +10,8 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.pagingtest.compose.ComposeActivity
 import com.example.pagingtest.room.AppDatabase
+import com.example.pagingtest.service.BindServiceActivity
 import com.example.pagingtest.service.DBService
-import com.example.pagingtest.service.bindService
 import com.example.pagingtest.ui.RoomAdapter
 import com.example.pagingtest.view.ItemExpandAnimator
 
@@ -57,7 +57,8 @@ class MainActivity : AppCompatActivity() {
 
         startService(Intent(this, DBService::class.java))
 
-        bindService("com.example.multimodule.AIDLService")
+//        bindService("com.example.multimodule.AIDLService")
+        startActivity(Intent(this, BindServiceActivity::class.java))
     }
 
     override fun onDestroy() {

@@ -6,9 +6,11 @@ import android.os.IBinder
 import android.util.Log
 import com.example.pagingtest.room.AppDatabase
 import com.example.pagingtest.room.User
-import kotlinx.coroutines.*
 import kotlinx.coroutines.Dispatchers.IO
+import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
 
 /*TODO service coroutineScope*/
 class DBService : Service() {

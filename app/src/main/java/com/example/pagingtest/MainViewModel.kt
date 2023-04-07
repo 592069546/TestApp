@@ -11,6 +11,8 @@ import com.example.pagingtest.room.FuckerRepository
 import com.example.pagingtest.room.User
 import com.example.pagingtest.room.UserRepository
 import com.example.pagingtest.test.FlowRetry
+import com.example.pagingtest.test.FlowTransformWhile.testCallbackFlow
+import com.example.pagingtest.test.FlowTransformWhile.testTransFormWhile
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -94,6 +96,8 @@ class MainViewModel(
                 Log.d(TAG, "fuckers ${it.size}")
             }
         }
+
+        testCallbackFlow(viewModelScope)
     }
 
     fun onPost() {

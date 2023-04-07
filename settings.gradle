@@ -17,3 +17,4 @@ dependencyResolutionManagement {
 rootProject.name = "pagingTest"
 include ':app'
 include ':multiModule'
+include ':base'
