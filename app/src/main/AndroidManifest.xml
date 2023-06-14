@@ -4,11 +4,13 @@
     package="com.example.pagingtest">
 
     <queries>
-        <package android:name="com.example.multimodule" />
+        <package android:name="com.example.service" />
         <intent>
             <action android:name="android.intent.action.AIDLService" />
         </intent>
     </queries>
+
+    <uses-permission android:name="android.intent.action.AIDLService"/>
 
     <application
         android:name=".BaseApplication"

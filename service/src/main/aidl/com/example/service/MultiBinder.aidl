@@ -1,5 +1,5 @@
 // MultiBinder.aidl
-package com.example.multimodule;
+package com.example.service;
 
 // Declare any non-default types here with import statements
 

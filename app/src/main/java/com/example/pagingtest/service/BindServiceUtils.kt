@@ -29,7 +29,10 @@ fun Context.bindService(
 }
 
 fun PackageManager.resolveServiceCompat(intent: Intent): ResolveInfo? {
-    val flag = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) PackageManager.MATCH_ALL else PackageManager.MATCH_DEFAULT_ONLY
+    val flag = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
+        PackageManager.MATCH_ALL
+    else
+        PackageManager.MATCH_DEFAULT_ONLY
     return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
         resolveService(intent, PackageManager.ResolveInfoFlags.of(flag.toLong()))
     else
@@ -38,3 +41,4 @@ fun PackageManager.resolveServiceCompat(intent: Intent): ResolveInfo? {
 
 const val ACTION_AIDL = "android.intent.action.AIDLService"
 const val SERVICE_AIDL = "com.example.multimodule.AIDLService"
+const val PERMISSION_AIDL = "android.intent.action.AIDLService"

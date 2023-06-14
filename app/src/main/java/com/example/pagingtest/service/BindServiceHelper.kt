@@ -5,12 +5,14 @@ import android.content.Context
 import android.content.ServiceConnection
 import android.os.IBinder
 import android.util.Log
-import androidx.lifecycle.*
-import com.example.multimodule.MultiBinder
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.lifecycleScope
+import com.example.service.MultiBinder
 import kotlinx.coroutines.*
-import kotlinx.coroutines.channels.awaitClose
-import kotlinx.coroutines.flow.*
-import java.util.concurrent.TimeoutException
+import kotlinx.coroutines.flow.flow
+import kotlin.coroutines.resume
 
 class BindServiceHelper(private val context: Context) {
     private val owner: LifecycleOwner =
@@ -51,46 +53,37 @@ class BindServiceHelper(private val context: Context) {
         callback: ServiceConnectCallback
     ) {
         scope.launchWhenCreated {
-            owner.repeatOnLifecycle(Lifecycle.State.CREATED) {
-                callbackFlow {
-                    val connectionTimer: Job = this.launch {
-                        flow {
-                            delay(5000)
-                            emit(false)
-                        }.collect {
-                            Log.e(TAG, "bind service out time")
-                            trySend(Result(-1))
-                        }
-                    }
+            val result = bindServiceImpl(context, serviceName, action, 3)
+            println("****** $result")
+        }
+    }
+
+    private suspend fun bindServiceImpl(
+        context: Context,
+        serviceName: String,
+        action: String,
+        retryTime: Int
+    ): Result {
+        println("****** $retryTime")
+        if (retryTime == 0)
+            return Result(-1)
+        return try {
+            withTimeout(5000) {
+                return@withTimeout suspendCancellableCoroutine {
                     val binding = object : ServiceConnection {
                         override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
-                            this@callbackFlow.launch {
-//                                delay(5000)
-                                connectionTimer.cancel()
-                                trySend(Result(0, name, service))
-                            }
+                            it.resume(Result(0, name, service))
                         }
 
                         override fun onServiceDisconnected(name: ComponentName?) {
-                            trySend(Result(1, name))
+                            it.resume(Result(1, name))
                         }
                     }
                     context.bindService(serviceName, action, binding)
-                    awaitClose {
-                        Log.d(TAG, "call back flow is close")
-                    }
-                }.onEach {
-                    if (it.status == -1)
-                        throw TimeoutException()
-                }.retryWhen { e, time ->
-                    Log.e(TAG, "retry time: $time")
-                    e is TimeoutException && time < 2
-                }.catch { e: Throwable ->
-
-                }.collect {
-                    Log.d(TAG, "collect $it")
                 }
             }
+        } catch (e: TimeoutCancellationException) {
+            bindServiceImpl(context, serviceName, action, retryTime - 1)
         }
     }
 
