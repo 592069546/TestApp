@@ -15,6 +15,6 @@ dependencyResolutionManagement {
     }
 }
 rootProject.name = "pagingTest"
-include ':app'
-include ':service'
-include ':base'
+include(":app")
+include(":service")
+include(":base")
