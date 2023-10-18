@@ -1,6 +1,7 @@
 package com.garrick.wrappers;
 
 import android.annotation.TargetApi;
+import android.os.Build;
 import android.os.IInterface;
 import android.view.IDisplayFoldListener;
 import android.view.IRotationWatcher;
@@ -111,7 +112,7 @@ public final class WindowManager {
         }
     }
 
-    @TargetApi(29)
+    @TargetApi(Build.VERSION_CODES.Q)
     public void registerDisplayFoldListener(IDisplayFoldListener foldListener) {
         try {
             Class<?> cls = manager.getClass();

@@ -24,7 +24,7 @@ public final class ControlMessage {
     public static final int COPY_KEY_COPY = 1;
     public static final int COPY_KEY_CUT = 2;
 
-    private int type;
+    private final int type;
     private String text;
     private int metaState; // KeyEvent.META_*
     private int action; // KeyEvent.ACTION_* or MotionEvent.ACTION_* or POWER_MODE_*
@@ -41,12 +41,12 @@ public final class ControlMessage {
     private int repeat;
     private long sequence;
 
-    private ControlMessage() {
+    private ControlMessage(int  type) {
+        this.type = type;
     }
 
     public static ControlMessage createInjectKeycode(int action, int keycode, int repeat, int metaState) {
-        ControlMessage msg = new ControlMessage();
-        msg.type = TYPE_INJECT_KEYCODE;
+        ControlMessage msg = new ControlMessage(TYPE_INJECT_KEYCODE);
         msg.action = action;
         msg.keycode = keycode;
         msg.repeat = repeat;
@@ -55,16 +55,14 @@ public final class ControlMessage {
     }
 
     public static ControlMessage createInjectText(String text) {
-        ControlMessage msg = new ControlMessage();
-        msg.type = TYPE_INJECT_TEXT;
+        ControlMessage msg = new ControlMessage(TYPE_INJECT_TEXT);
         msg.text = text;
         return msg;
     }
 
     public static ControlMessage createInjectTouchEvent(int action, long pointerId, Position position, float pressure, int actionButton,
             int buttons) {
-        ControlMessage msg = new ControlMessage();
-        msg.type = TYPE_INJECT_TOUCH_EVENT;
+        ControlMessage msg = new ControlMessage(TYPE_INJECT_TOUCH_EVENT);
         msg.action = action;
         msg.pointerId = pointerId;
         msg.pressure = pressure;
@@ -75,8 +73,7 @@ public final class ControlMessage {
     }
 
     public static ControlMessage createInjectScrollEvent(Position position, float hScroll, float vScroll, int buttons) {
-        ControlMessage msg = new ControlMessage();
-        msg.type = TYPE_INJECT_SCROLL_EVENT;
+        ControlMessage msg = new ControlMessage(TYPE_INJECT_SCROLL_EVENT);
         msg.position = position;
         msg.hScroll = hScroll;
         msg.vScroll = vScroll;
@@ -85,22 +82,19 @@ public final class ControlMessage {
     }
 
     public static ControlMessage createBackOrScreenOn(int action) {
-        ControlMessage msg = new ControlMessage();
-        msg.type = TYPE_BACK_OR_SCREEN_ON;
+        ControlMessage msg = new ControlMessage(TYPE_BACK_OR_SCREEN_ON);
         msg.action = action;
         return msg;
     }
 
     public static ControlMessage createGetClipboard(int copyKey) {
-        ControlMessage msg = new ControlMessage();
-        msg.type = TYPE_GET_CLIPBOARD;
+        ControlMessage msg = new ControlMessage(TYPE_GET_CLIPBOARD);
         msg.copyKey = copyKey;
         return msg;
     }
 
     public static ControlMessage createSetClipboard(long sequence, String text, boolean paste) {
-        ControlMessage msg = new ControlMessage();
-        msg.type = TYPE_SET_CLIPBOARD;
+        ControlMessage msg = new ControlMessage(TYPE_SET_CLIPBOARD);
         msg.sequence = sequence;
         msg.text = text;
         msg.paste = paste;
@@ -111,16 +105,13 @@ public final class ControlMessage {
      * @param mode one of the {@code Device.SCREEN_POWER_MODE_*} constants
      */
     public static ControlMessage createSetScreenPowerMode(int mode) {
-        ControlMessage msg = new ControlMessage();
-        msg.type = TYPE_SET_SCREEN_POWER_MODE;
+        ControlMessage msg = new ControlMessage(TYPE_SET_SCREEN_POWER_MODE);
         msg.action = mode;
         return msg;
     }
 
     public static ControlMessage createEmpty(int type) {
-        ControlMessage msg = new ControlMessage();
-        msg.type = type;
-        return msg;
+        return new ControlMessage(type);
     }
 
     public int getType() {
