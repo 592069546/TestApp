@@ -7,6 +7,15 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * <a href="https://blog.csdn.net/ZivXu/article/details/128659839?spm=1001.2101.3001.6661.1&utm_medium=distribute.pc_relevant_t0.none-task-blog-2%7Edefault%7ECTRLIST%7ERate-1-128659839-blog-123073615.235%5Ev38%5Epc_relevant_sort_base1&depth_1-utm_source=distribute.pc_relevant_t0.none-task-blog-2%7Edefault%7ECTRLIST%7ERate-1-128659839-blog-123073615.235%5Ev38%5Epc_relevant_sort_base1">...</a>
+ * <a href="https://juejin.cn/post/6844904111066841101">...</a>
+ * <a href="https://www.jianshu.com/p/06f4b8919991">...</a>
+ * <a href="https://juejin.cn/post/6844904097796079624">...</a>
+ * <a href="https://www.jianshu.com/p/06f4b8919991">...</a>
+ * <a href="https://aheadsnail.github.io/2018/12/01/scrcpy-yuan-ma-fen-xi/">...</a>
+ * <a href="https://codezjx.com/posts/scrcpy-source-code-analysis/">...</a>
+ * */
 public final class Server {
 
     private static class Completion {

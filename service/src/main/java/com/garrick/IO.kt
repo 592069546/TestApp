@@ -12,7 +12,7 @@ import java.util.Scanner
 object IO {
     @Throws(IOException::class)
     @JvmStatic
-    fun writeFully(fd: FileDescriptor, from: ByteBuffer) {
+    fun writeFully(fd: FileDescriptor?, from: ByteBuffer) {
         // ByteBuffer position is not updated as expected by Os.write() on old Android versions, so
         // count the remaining bytes manually.
         // See <https://github.com/Genymobile/scrcpy/issues/291>.
@@ -35,7 +35,7 @@ object IO {
 
     @Throws(IOException::class)
     @JvmStatic
-    fun writeFully(fd: FileDescriptor, buffer: ByteArray, offset: Int = 0, len: Int = buffer.size) {
+    fun writeFully(fd: FileDescriptor?, buffer: ByteArray, offset: Int = 0, len: Int = buffer.size) {
         writeFully(fd, ByteBuffer.wrap(buffer, offset, len))
     }
 

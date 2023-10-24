@@ -7,7 +7,7 @@ import java.io.IOException
 import java.nio.ByteBuffer
 
 data class Streamer(
-    private val fd: FileDescriptor,
+    private val fd: FileDescriptor?,
     val codec: Codec,
     private val sendCodecMeta: Boolean,
     private val sendFrameMeta: Boolean
@@ -68,7 +68,7 @@ data class Streamer(
     }
 
     @Throws(IOException::class)
-    private fun writeFrameMeta(fd: FileDescriptor, packetSize: Int, pts: Long, config: Boolean, keyFrame: Boolean) {
+    private fun writeFrameMeta(fd: FileDescriptor?, packetSize: Int, pts: Long, config: Boolean, keyFrame: Boolean) {
         headerBuffer.clear()
         val ptsAndFlags: Long = if (config) {
             PACKET_FLAG_CONFIG // non-media data packet

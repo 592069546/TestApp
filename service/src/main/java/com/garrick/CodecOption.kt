@@ -1,6 +1,6 @@
 package com.garrick
 
-data class CodecOption(val key: String, val value: Any) {
+data class CodecOption constructor(val key: String, val value: Any) {
     companion object {
         @JvmStatic
         fun parse(codecOptions: String?): List<CodecOption>? {
